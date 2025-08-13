@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run build:*)",
+      "Bash(npm publish:*)",
+      "Bash(timeout 3s npx --yes @buger/big-brain)",
+      "Bash(timeout:*)",
+      "Bash(npm pack:*)",
+      "Bash(tar:*)",
+      "Bash(cat:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(NPX_DEBUG=1 timeout 10s npx --yes @buger/big-brain)",
+      "Bash(npm pkg:*)",
+      "WebSearch",
+      "Bash(npm view:*)",
+      "Bash(npm cache clean:*)",
+      "Bash(npm run inspector:*)",
+      "Bash(npx @modelcontextprotocol/inspector:*)",
+      "Bash(chmod:*)",
+      "Bash(node:*)",
+      "Bash(rm:*)",
+      "Bash(git init:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

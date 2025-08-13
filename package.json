@@ -1,0 +1,46 @@
+{
+  "name": "@buger/big-brain",
+  "version": "0.1.4",
+  "main": "build/index.js",
+  "description": "MCP server for formatting complex code questions with file context",
+  "type": "module",
+  "author": "buger",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/buger/big-brain.git"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "ai",
+    "code-assistant",
+    "development-tools"
+  ],
+  "bin": {
+    "big-brain": "build/index.js"
+  },
+  "files": [
+    "build/**/*"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc && chmod +x build/index.js",
+    "prepare": "npm run build",
+    "watch": "tsc --watch",
+    "inspector": "npx @modelcontextprotocol/inspector build/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.6.0",
+    "clipboardy": "^4.0.0",
+    "fs-extra": "^11.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.24",
+    "@types/clipboardy": "^1.1.0",
+    "@types/fs-extra": "^11.0.4",
+    "typescript": "^5.3.3"
+  }
+}
