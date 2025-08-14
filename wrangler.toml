@@ -1,0 +1,8 @@
+name = "big-brain-router"
+main = "worker.js"
+compatibility_date = "2025-01-14"
+
+# Routes configuration for probeai.dev subdirectory
+[[routes]]
+pattern = "probeai.dev/big-brain/*"
+zone_name = "probeai.dev"
