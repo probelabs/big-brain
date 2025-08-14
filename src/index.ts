@@ -33,9 +33,9 @@ const CONFIG = {
   outputPath: path.join(os.tmpdir(), 'big_brain_output.txt'),
   maxFiles: 100,
   maxFileSize: 1_000_000, // 1 MB
-  // Parse command-line flags
-  enableSound: args.includes('--sound'),
-  enableNotify: args.includes('--notify') || args.includes('--dialog')
+  // Parse command-line flags - enabled by default, disable with flags
+  enableSound: !args.includes('--disable-sound'),
+  enableNotify: !args.includes('--disable-notification')
 };
 
 interface BigBrainArgs {
@@ -179,9 +179,22 @@ async function showNotificationAndCopy(content: string, fileCount: number, origi
  * Shows a macOS notification using AppleScript.
  */
 async function showMacNotification(fileCount: number): Promise<void> {
-  exec(`osascript -e 'display notification "Big Brain content copied to clipboard! Paste into your AI system." with title "Big Brain (${fileCount} files)" sound name "Glass"'`, (error) => {
-    if (error) {
-      console.error('macOS notification failed:', error.message);
+  // Use terminal-notifier if available, fallback to osascript
+  exec('which terminal-notifier', (error) => {
+    if (!error) {
+      // Use terminal-notifier which has better control over click behavior
+      exec(`terminal-notifier -message "Content copied to clipboard! Paste into your AI system." -title "Big Brain" -subtitle "Ready for AI system"`, (error) => {
+        if (error) {
+          console.error('terminal-notifier failed:', error.message);
+        }
+      });
+    } else {
+      // Fallback to basic osascript notification
+      exec(`osascript -e 'display notification "Big Brain: Content copied to clipboard! Paste into your AI system." with title "Big Brain"'`, (error) => {
+        if (error) {
+          console.error('macOS notification failed:', error.message);
+        }
+      });
     }
   });
 }
