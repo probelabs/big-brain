@@ -1,6 +1,6 @@
 {
   "name": "@buger/big-brain",
-  "version": "0.1.4",
+  "version": "0.4.4",
   "main": "build/index.js",
   "description": "MCP server for formatting complex code questions with file context",
   "type": "module",
@@ -27,12 +27,13 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsc && chmod +x build/index.js",
+    "build": "tsc && node -e \"require('fs').chmodSync('build/index.js', '755')\"",
     "prepare": "npm run build",
     "watch": "tsc --watch",
     "inspector": "npx @modelcontextprotocol/inspector build/index.js"
   },
   "dependencies": {
+    "@buger/probe": "*",
     "@modelcontextprotocol/sdk": "^0.6.0",
     "clipboardy": "^4.0.0",
     "fs-extra": "^11.3.0"
