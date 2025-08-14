@@ -35,7 +35,7 @@ const CONFIG = {
   maxFileSize: 1_000_000, // 1 MB
   // Parse command-line flags
   enableSound: args.includes('--sound'),
-  enableDialog: args.includes('--dialog')
+  enableNotify: args.includes('--notify') || args.includes('--dialog')
 };
 
 interface BigBrainArgs {
@@ -124,8 +124,8 @@ function playSystemSound(): void {
  * @param originalQuestion - The user's original question
  */
 async function handleOutput(content: string, fileCount: number, originalQuestion: string): Promise<void> {
-  if (CONFIG.enableDialog) {
-    await showNativeDialog(content, fileCount, originalQuestion);
+  if (CONFIG.enableNotify) {
+    await showNotificationAndCopy(content, fileCount, originalQuestion);
   } else {
     // Default behavior - copy to clipboard
     await clipboardy.write(content);
@@ -136,81 +136,81 @@ async function handleOutput(content: string, fileCount: number, originalQuestion
 }
 
 /**
- * Shows a native dialog with copyable content based on the platform.
- * @param content - The content to show in the dialog
+ * Shows a native notification and copies content to clipboard.
+ * @param content - The content to copy to clipboard
  * @param fileCount - Number of files extracted
  * @param originalQuestion - The user's original question
  */
-async function showNativeDialog(content: string, fileCount: number, originalQuestion: string): Promise<void> {
-  const { platform, isWSL } = detectPlatform();
+async function showNotificationAndCopy(content: string, fileCount: number, originalQuestion: string): Promise<void> {
+  const { platform } = detectPlatform();
+  
+  // Prepare display content with question
+  const displayContent = `QUESTION: ${originalQuestion}\n\nCONTENT (${fileCount} files):\n${content}`;
   
   try {
+    // Copy to clipboard first
+    await clipboardy.write(displayContent);
+    
+    // Show platform-specific notification
     switch(platform) {
       case 'darwin':
-        showMacDialog(content, fileCount, originalQuestion);
+        await showMacNotification(fileCount);
         break;
         
       case 'win32':
-        showWindowsDialog(content, fileCount, originalQuestion, false);
-        break;
-        
       case 'wsl':
-        showWindowsDialog(content, fileCount, originalQuestion, true);
+        showWindowsNotification(fileCount);
         break;
         
       case 'linux':
-        showLinuxDialog(content, fileCount, originalQuestion);
+        showLinuxNotification(fileCount);
         break;
         
       default:
-        console.error(`Unsupported platform: ${platform}`);
-        // Fallback to clipboard
-        await clipboardy.write(content);
+        console.log(`Big Brain content ready! ${fileCount} files extracted and copied to clipboard.`);
     }
   } catch (error) {
-    console.error('Dialog failed, falling back to clipboard:', error);
-    // Fallback to clipboard if dialog fails
-    await clipboardy.write(content);
+    console.error('Notification failed:', error);
+    console.log(`Big Brain content ready! ${fileCount} files extracted and saved to temp file.`);
   }
 }
 
 /**
- * Shows a macOS dialog using AppleScript.
+ * Shows a macOS notification using AppleScript.
  */
-function showMacDialog(content: string, fileCount: number, originalQuestion: string): void {
-  // Truncate very long content to keep dialog manageable
-  const maxLines = 25; // Reduced from unlimited to control height
-  const contentLines = content.split('\n');
-  const truncatedContent = contentLines.length > maxLines 
-    ? contentLines.slice(0, maxLines).join('\n') + '\n\n[Content truncated - full content saved to file]'
-    : content;
-  
-  // Format content more compactly for dialog display
-  const displayContent = `QUESTION: ${originalQuestion}\n\nCONTENT (${fileCount} files):\n${truncatedContent}`;
-  
-  // Escape content for AppleScript and add line breaks for wider display
-  const escapedContent = displayContent
-    .replace(/\\/g, '\\\\')
-    .replace(/"/g, '\\"')
-    .replace(/\n/g, '\\n');
-    
-  const script = `
-    set dialogText to "${escapedContent}"
-    set theDialog to display dialog "Big Brain Ready - Content prepared for copying" ¬
-      default answer dialogText ¬
-      buttons {"Copy All", "Close"} ¬
-      default button 1 ¬
-      with title "Big Brain (${fileCount} files)"
-    
-    if button returned of theDialog is "Copy All" then
-      set the clipboard to text returned of theDialog
-      display notification "Content copied to clipboard!" with title "Big Brain" sound name "Glass"
-    end if
-  `;
-  
-  exec(`osascript -e '${script}'`, (error) => {
+async function showMacNotification(fileCount: number): Promise<void> {
+  exec(`osascript -e 'display notification "Big Brain content copied to clipboard! Paste into your AI system." with title "Big Brain (${fileCount} files)" sound name "Glass"'`, (error) => {
     if (error) {
-      console.error('macOS dialog failed:', error);
+      console.error('macOS notification failed:', error.message);
+    }
+  });
+}
+
+/**
+ * Shows a Windows notification.
+ */
+function showWindowsNotification(fileCount: number): void {
+  const message = `Big Brain content copied to clipboard! ${fileCount} files extracted.`;
+  exec(`powershell -Command "Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.MessageBox]::Show('${message}', 'Big Brain')"`, (error) => {
+    if (error) {
+      console.error('Windows notification failed:', error.message);
+    }
+  });
+}
+
+/**
+ * Shows a Linux notification.
+ */
+function showLinuxNotification(fileCount: number): void {
+  exec('which notify-send', (error) => {
+    if (!error) {
+      exec(`notify-send "Big Brain (${fileCount} files)" "Content copied to clipboard! Paste into your AI system."`, (error) => {
+        if (error) {
+          console.error('Linux notification failed:', error.message);
+        }
+      });
+    } else {
+      console.log(`Big Brain: ${fileCount} files extracted and copied to clipboard.`);
     }
   });
 }
@@ -818,31 +818,20 @@ class BigBrainServer {
         await handleOutput(formattedContent, fileCount, validatedArgs.question);
         const fileList = fileContents.map(f => `- ${f.path}`).join('\\n');
         
-        // Build response message based on enabled features
-        let outputMethod = '';
-        if (CONFIG.enableDialog) {
-          outputMethod = 'A native dialog has been shown with the content.';
-        } else {
-          outputMethod = 'Content has been copied to your clipboard.';
-        }
-        
-        const soundMessage = CONFIG.enableSound ? ' A notification sound was played.' : '';
-        
         return {
           content: [
             {
               type: 'text',
               text:
-                `Successfully prepared question with ${fileCount} file${fileCount !== 1 ? 's' : ''} using probe extract:\n\n`
-                + `1. ${outputMethod}${soundMessage}\n`
-                + `2. Content has been saved to: ${CONFIG.outputPath}\n\n`
-                + `Files extracted:\n${fileList}\n\n`
+                `Successfully prepared question with ${fileCount} file${fileCount !== 1 ? 's' : ''} using probe extract.\n\n`
+                + `Question also saved to file, if clipboard failed: ${CONFIG.outputPath}\n\n`
                 + 'IMPORTANT: This tool requires user interaction:\n\n'
                 + '1. The formatted content has been prepared for you.\n'
-                + (CONFIG.enableDialog 
+                + (CONFIG.enableNotify 
                     ? '2. Copy the content from the dialog and paste it into the Big Brain system.\n'
                     : '2. Paste the clipboard content into the Big Brain system.\n')
-                + '3. After obtaining a response from Big Brain, return to the IDE with the response.\n\n'
+                + `3. FALLBACK: If clipboard/dialog fails, read content from: ${CONFIG.outputPath}\n`
+                + '4. After obtaining a response from Big Brain, return to the IDE with the response.\n\n'
                 + "The IDE should now wait for you to complete these steps and provide Big Brain's response."
             },
           ],
