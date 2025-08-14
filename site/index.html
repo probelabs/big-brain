@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Big Brain - When your AI needs a bigger brain</title>
+    <meta name="description" content="Big Brain is an MCP server that packages precise code context into a clean, paste‑ready prompt so you can hand stuck problems to premium models (ChatGPT 5 Pro, Grok Heavy, Claude Opus) — or any model — without session noise.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Neural network background -->
+    <div class="neural-background">
+        <canvas id="neural-canvas"></canvas>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="brain-animation">
+                    <div class="brain-core"></div>
+                    <div class="neural-pulse pulse-1"></div>
+                    <div class="neural-pulse pulse-2"></div>
+                    <div class="neural-pulse pulse-3"></div>
+                </div>
+                <p class="kicker">Stop the loop. Ship the fix.</p>
+                <h1 class="hero-title">
+                    When your AI needs a <span class="gradient-text">bigger brain</span>
+                </h1>
+                <p class="hero-subtitle">
+                    When your model stalls or loops, give it an elegant exit. Big Brain extracts the exact code and context and prepares a clean, paste‑ready pack for a fresh session.
+                </p>
+                <div class="model-badges" aria-label="Compatible models">
+                    <span class="badge">Works with any model</span>
+                    <span class="badge">Great with ChatGPT&nbsp;5&nbsp;Pro</span>
+                    <span class="badge">Grok&nbsp;Heavy</span>
+                    <span class="badge">Claude&nbsp;Opus</span>
+                </div>
+                
+                <div class="hero-install">
+                    <h3>Quick Start with Claude Code</h3>
+                    <div class="command-box hero-command">
+                        <pre><code id="hero-install-cmd">claude mcp add -- npx -y @buger/big-brain@latest --notify --sound</code></pre>
+                        <button class="copy-btn" onclick="copyHeroCommand()">
+                            <span class="copy-icon">📋</span>
+                            <span class="copy-text">Copy</span>
+                        </button>
+                    </div>
+                    <p class="install-note">Includes native notifications and sound alerts</p>
+                    <a href="#install" class="install-link">See other installation options →</a>
+                </div>
+                
+                <div class="hero-cta">
+                    <a href="#install" class="cta-button primary">Install Big Brain</a>
+                    <a href="#demo" class="cta-button secondary">See Demo</a>
+                    <a href="#why" class="cta-button secondary">Why Big Brain?</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Big Brain Section -->
+    <section id="why" class="why-section">
+        <div class="container">
+            <div class="why-content">
+                <div class="problem-solution">
+                    <div class="problem-text">
+                        <h2>The Problem</h2>
+                        <p>When large models get trapped in chat history—looping, losing the thread across tool calls, or burning tokens chasing context—progress stalls. You need a clean exit that strips the noise and isolates only the code that matters.</p>
+                    </div>
+                    <div class="solution-text">
+                        <h2>The Solution</h2>
+                        <p>Big Brain scopes the exact code and surrounding context, formats it into a minimal, paste‑ready prompt pack, and lets you hand the problem to a bigger model (<strong>ChatGPT&nbsp;5&nbsp;Pro</strong>, <strong>Grok&nbsp;Heavy</strong>, <strong>Claude&nbsp;Opus</strong>)—or any model you prefer—in a fresh session.</p>
+                    </div>
+                </div>
+                
+                <div class="how-it-works">
+                    <h3>How it works:</h3>
+                    <ol class="simple-steps">
+                        <li><strong>Scope:</strong> Describe the file, error, or test. Big Brain extracts only the relevant code &amp; context.</li>
+                        <li><strong>Pack:</strong> Builds a clean, structured prompt pack for AI consumption.</li>
+                        <li><strong>Solve:</strong> You get a native notification and the pack on your clipboard—open a fresh AI session and paste.</li>
+                    </ol>
+                </div>
+
+                <div class="feature-callout">
+                    <h4>New: Notification + Clipboard flow</h4>
+                    <ul class="checklist">
+                        <li>No modal dialogs — runs in the background</li>
+                        <li>Native OS notification when your context pack is ready (<code>--notify</code>)</li>
+                        <li>Optional sound cue (<code>--sound</code>)</li>
+                        <li>Paste into a clean thread — zero session noise</li>
+                    </ul>
+                    <pre class="inline-command"><code>claude mcp add -- npx -y @buger/big-brain@latest --notify --sound</code></pre>
+                </div>
+
+                <div class="value-props">
+                    <div class="prop">
+                        <span class="prop-icon">🎯</span>
+                        <span>Kill session noise (fresh threads, clean context)</span>
+                    </div>
+                    <div class="prop">
+                        <span class="prop-icon">🚀</span>
+                        <span>Premium‑ready, model‑agnostic</span>
+                    </div>
+                    <div class="prop">
+                        <span class="prop-icon">🔧</span>
+                        <span>Native notifications + clipboard (no dialogs)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Video Demo Section -->
+    <section id="demo" class="demo-section">
+        <div class="container">
+            <h2 class="section-title">See Big Brain in <span class="gradient-text">Action</span></h2>
+            <div class="video-container">
+                <div class="video-placeholder">
+                    <div class="play-button">▶</div>
+                    <p>Demo video coming soon</p>
+                    <small>Watch how Big Brain transforms complex coding questions</small>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Installation Section -->
+    <section id="install" class="install-section">
+        <div class="container">
+            <h2 class="section-title">Easy <span class="gradient-text">Installation</span></h2>
+            <div class="install-content">
+                <div class="install-command">
+                    <h3>One Command Setup</h3>
+                    <div class="command-box">
+                        <pre><code id="install-cmd">claude mcp add -- npx -y @buger/big-brain@latest --notify --sound</code></pre>
+                        <button class="copy-btn" onclick="copyInstallCommand()">
+                            <span class="copy-icon">📋</span>
+                            <span class="copy-text">Copy</span>
+                        </button>
+                    </div>
+                    <p class="install-note">Includes native notifications and sound alerts</p>
+                </div>
+                <div class="install-alternatives">
+                    <h4>Other Installation Methods</h4>
+                    <div class="alt-commands">
+                        <div class="alt-command">
+                            <h5>Cursor IDE</h5>
+                            <pre><code>Add to Cursor's MCP settings:
+{
+  "mcpServers": {
+    "big-brain": {
+      "command": "npx",
+      "args": ["-y", "@buger/big-brain@latest", "--notify", "--sound"]
+    }
+  }
+}</code></pre>
+                        </div>
+                        <div class="alt-command">
+                            <h5>Global Installation</h5>
+                            <pre><code>npm install -g @buger/big-brain</code></pre>
+                        </div>
+                        <div class="alt-command">
+                            <h5>Direct npx Usage</h5>
+                            <pre><code>npx -y @buger/big-brain@latest</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Probe Ecosystem Section -->
+    <section class="ecosystem-section">
+        <div class="container">
+            <h2 class="section-title">Part of the <span class="gradient-text">Probe Ecosystem</span></h2>
+            <div class="ecosystem-content">
+                <div class="ecosystem-info">
+                    <h3>Built on Probe's Foundation</h3>
+                    <p>Big Brain leverages the powerful <a href="https://github.com/buger/probe" target="_blank">Probe project</a> for intelligent code extraction and analysis. Together, they form a comprehensive toolkit for AI-assisted development.</p>
+                    <div class="ecosystem-benefits">
+                        <div class="benefit">
+                            <span class="benefit-icon">🔍</span>
+                            <span>Smart Code Extraction</span>
+                        </div>
+                        <div class="benefit">
+                            <span class="benefit-icon">🎯</span>
+                            <span>Context-Aware Analysis</span>
+                        </div>
+                        <div class="benefit">
+                            <span class="benefit-icon">🚀</span>
+                            <span>Developer Productivity</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="probe-attribution">
+                    <div class="probe-logo">
+                        <div class="probe-icon">🔬</div>
+                        <h4>Probe</h4>
+                    </div>
+                    <p>The intelligent code analysis engine powering Big Brain</p>
+                    <a href="https://github.com/buger/probe" target="_blank" class="probe-link">Explore Probe →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <h3>Big Brain</h3>
+                    <p>When your AI needs a bigger brain</p>
+                </div>
+                <div class="footer-links">
+                    <a href="https://github.com/buger/big-brain" target="_blank">GitHub</a>
+                    <a href="https://github.com/buger/big-brain#readme" target="_blank">Documentation</a>
+                    <a href="https://github.com/buger/probe" target="_blank">Probe Project</a>
+                </div>
+                <div class="footer-credit">
+                    <p>Created with ❤️ by <a href="https://github.com/buger" target="_blank">@buger</a></p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+    // Simple copy functionality
+    function copyToClipboard(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+            return navigator.clipboard.writeText(text);
+        } else {
+            // Fallback for older browsers
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-999999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+            } catch (err) {
+                console.error('Copy failed:', err);
+            }
+            document.body.removeChild(textArea);
+        }
+    }
+
+    function copyHeroCommand() {
+        const command = document.getElementById('hero-install-cmd').textContent.trim();
+        copyToClipboard(command);
+        
+        const button = document.querySelector('.hero-command .copy-btn');
+        const originalText = button.querySelector('.copy-text').textContent;
+        button.querySelector('.copy-text').textContent = 'Copied!';
+        button.classList.add('copied');
+        
+        setTimeout(() => {
+            button.querySelector('.copy-text').textContent = originalText;
+            button.classList.remove('copied');
+        }, 2000);
+    }
+
+    function copyInstallCommand() {
+        const command = document.getElementById('install-cmd').textContent.trim();
+        copyToClipboard(command);
+        
+        const button = document.querySelector('#install .copy-btn');
+        const originalText = button.querySelector('.copy-text').textContent;
+        button.querySelector('.copy-text').textContent = 'Copied!';
+        button.classList.add('copied');
+        
+        setTimeout(() => {
+            button.querySelector('.copy-text').textContent = originalText;
+            button.classList.remove('copied');
+        }, 2000);
+    }
+    </script>
+</body>
+</html>
