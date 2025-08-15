@@ -19,13 +19,13 @@ Big Brain is an MCP server designed to help developers prepare detailed question
 ### As a global npm package
 
 ```bash
-npm install -g @buger/big-brain
+npm install -g @probelabs/big-brain
 ```
 
 ### For development
 
 ```bash
-git clone https://github.com/buger/big-brain.git
+git clone https://github.com/probelabs/big-brain.git
 cd big-brain
 npm install
 npm run build
@@ -57,7 +57,7 @@ Add the server configuration to Claude Desktop:
   "mcpServers": {
     "big-brain": {
       "command": "npx",
-      "args": ["--yes", "--package=@buger/big-brain", "big-brain"]
+      "args": ["--yes", "--package=@probelabs/big-brain", "big-brain"]
     }
   }
 }
@@ -153,4 +153,4 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## Support
 
-For issues and questions, please use the [GitHub issue tracker](https://github.com/buger/big-brain/issues).
+For issues and questions, please use the [GitHub issue tracker](https://github.com/probelabs/big-brain/issues).

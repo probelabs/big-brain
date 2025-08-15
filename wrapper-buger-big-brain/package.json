@@ -1,0 +1,39 @@
+{
+  "name": "@buger/big-brain",
+  "version": "0.5.4",
+  "description": "DEPRECATED: This package has moved to @probelabs/big-brain. Please update your dependencies.",
+  "main": "build/index.js",
+  "type": "module",
+  "author": "buger",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/probelabs/big-brain.git"
+  },
+  "keywords": [
+    "deprecated",
+    "moved",
+    "mcp",
+    "model-context-protocol",
+    "ai",
+    "code-assistant",
+    "development-tools"
+  ],
+  "bin": {
+    "big-brain": "build/index.js"
+  },
+  "files": [
+    "build/**/*",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "node -e \"require('fs').mkdirSync('build', {recursive: true})\" && node build-wrapper.js",
+    "prepare": "npm run build"
+  },
+  "dependencies": {
+    "@probelabs/big-brain": "^0.5.3"
+  }
+}

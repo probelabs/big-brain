@@ -19,7 +19,7 @@ BigBrain is an MCP server that gives your AI an elegant exit when it gets stuck,
 
 ### Claude Code (Recommended)
 ```bash
-claude mcp add -- npx -y @buger/big-brain@latest
+claude mcp add -- npx -y @probelabs/big-brain@latest
 ```
 
 ### Cursor & Other MCP Clients
@@ -29,7 +29,7 @@ Add to your MCP configuration file:
   "mcpServers": {
     "big-brain": {
       "command": "npx",
-      "args": ["-y", "@buger/big-brain@latest"]
+      "args": ["-y", "@probelabs/big-brain@latest"]
     }
   }
 }
@@ -64,7 +64,7 @@ If you prefer silent operation, you can disable sound and desktop notifications:
   "mcpServers": {
     "big-brain": {
       "command": "npx",
-      "args": ["-y", "@buger/big-brain@latest", "--disable-sound", "--disable-notification"]
+      "args": ["-y", "@probelabs/big-brain@latest", "--disable-sound", "--disable-notification"]
     }
   }
 }
@@ -105,7 +105,7 @@ Whenever you get stuck and can't find a solution - just ask BigBrain MCP for adv
 ### Local Development Setup
 
 ```bash
-git clone https://github.com/buger/big-brain.git
+git clone https://github.com/probelabs/big-brain.git
 cd big-brain
 npm install
 npm run build
@@ -153,4 +153,4 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## Support
 
-For issues and questions, please use the [GitHub issue tracker](https://github.com/buger/big-brain/issues).
+For issues and questions, please use the [GitHub issue tracker](https://github.com/probelabs/big-brain/issues).

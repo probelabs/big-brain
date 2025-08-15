@@ -1,5 +1,5 @@
 {
-  "name": "@buger/big-brain",
+  "name": "@probelabs/big-brain",
   "version": "0.1.1",
   "description": "MCP server for formatting complex code questions with file context",
   "type": "module",
@@ -7,7 +7,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/buger/big-brain.git"
+    "url": "https://github.com/probelabs/big-brain.git"
   },
   "keywords": [
     "mcp",
