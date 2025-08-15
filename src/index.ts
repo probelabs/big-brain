@@ -726,7 +726,8 @@ class BigBrainServer {
           extractedContent = await extract({
             inputFile: tempQuestionFile,
             format: 'json',
-            json: false  // Get raw string output to avoid probe's JSON parsing issues
+            json: false,  // Get raw string output to avoid probe's JSON parsing issues
+            allowTests: true  // Include test files in extraction
           });
         } catch (probeError: any) {
           const errorDetails = [
