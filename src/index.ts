@@ -13,7 +13,7 @@ import os from 'os';
 import fs from 'fs-extra';
 import clipboardy from 'clipboardy';
 import { exec } from 'child_process';
-// @ts-ignore - @buger/probe doesn't have TypeScript declarations
+// @ts-ignore - @buger/probe doesn't have TypeScript declarations (using latest version)
 import { extract } from '@buger/probe';
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
