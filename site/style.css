@@ -547,6 +547,14 @@ body {
     text-align: left;
 }
 
+/* Override for multiline content in optional automation */
+.optional-automation .command-box pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    word-break: normal;
+    text-align: left;
+}
+
 .copy-btn {
     position: absolute;
     top: 1rem;
@@ -562,7 +570,6 @@ body {
     justify-content: center;
     width: 2rem;
     height: 2rem;
-    font-size: 0.9rem;
     transition: var(--transition-smooth);
     backdrop-filter: blur(10px);
 }
@@ -575,6 +582,15 @@ body {
 .copy-btn.copied {
     background: var(--accent-purple);
     border-color: var(--accent-purple);
+}
+
+.copy-icon {
+    flex-shrink: 0;
+    stroke: currentColor;
+}
+
+.copy-text {
+    flex-shrink: 0;
 }
 
 .install-note {
@@ -896,6 +912,241 @@ body {
     
     .problem-solution {
         gap: 2rem;
+    }
+}
+
+/* Quick Start Section */
+.quickstart-section {
+    padding: 4rem 0 6rem;
+    background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+}
+
+.steps-container {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+
+.step-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 2.5rem;
+    position: relative;
+    transition: var(--transition-smooth);
+    backdrop-filter: blur(10px);
+}
+
+.step-card:hover {
+    border-color: var(--accent-purple);
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(124, 58, 237, 0.1);
+}
+
+.step-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.step-number {
+    width: 3rem;
+    height: 3rem;
+    background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.2rem;
+    box-shadow: 0 4px 16px rgba(124, 58, 237, 0.3);
+    min-width: 3rem;
+}
+
+.step-header h3 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+    line-height: 1.2;
+}
+
+.step-description {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.step-card .install-tabs {
+    margin: 1.5rem 0;
+}
+
+.step-card .command-box {
+    margin-top: 1.5rem;
+    margin-bottom: 0;
+}
+
+.instruction-box {
+    background: rgba(6, 182, 212, 0.1);
+    border: 1px solid var(--accent-cyan);
+    border-radius: var(--border-radius);
+    padding: 1.25rem;
+    margin-top: 1rem;
+    text-align: left;
+}
+
+.instruction-box p {
+    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
+    color: var(--text-primary);
+    line-height: 1.5;
+}
+
+.instruction-box p:last-child {
+    margin-bottom: 0;
+    font-style: italic;
+    color: var(--text-secondary);
+}
+
+.instruction-box strong {
+    color: var(--accent-cyan);
+}
+
+.optional-automation {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: rgba(124, 58, 237, 0.05);
+    border: 1px dashed var(--accent-purple);
+    border-radius: var(--border-radius);
+}
+
+.optional-automation h4 {
+    margin: 0 0 1rem 0;
+    font-size: 1.1rem;
+    color: var(--accent-purple);
+    font-weight: 600;
+}
+
+.optional-automation p {
+    margin: 0 0 1rem 0;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.optional-automation code {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--accent-cyan);
+}
+
+.pro-tip {
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(6, 182, 212, 0.1));
+    border: 1px solid var(--accent-purple);
+    border-radius: var(--border-radius);
+    padding: 1.25rem;
+    margin-top: 1.5rem;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.journey-visual {
+    margin-top: 4rem;
+    text-align: center;
+}
+
+.journey-strip {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem 2rem;
+    font-size: 1rem;
+    color: var(--text-secondary);
+    backdrop-filter: blur(10px);
+}
+
+.journey-strip span {
+    padding: 0.5rem 1rem;
+    background: rgba(124, 58, 237, 0.2);
+    border-radius: var(--border-radius);
+    color: var(--text-primary);
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.journey-strip span:first-child {
+    background: rgba(236, 72, 153, 0.2);
+    color: var(--accent-pink);
+}
+
+.journey-strip span:last-child {
+    background: rgba(6, 182, 212, 0.2);
+    color: var(--accent-cyan);
+}
+
+/* Responsive adjustments for Quick Start */
+@media (max-width: 768px) {
+    .quickstart-section {
+        padding: 3rem 0 4rem;
+    }
+    
+    .steps-container {
+        gap: 2rem;
+    }
+    
+    .step-card {
+        padding: 2rem;
+    }
+    
+    .step-header {
+        gap: 1rem;
+    }
+    
+    .step-number {
+        width: 2.5rem;
+        height: 2.5rem;
+        font-size: 1rem;
+        min-width: 2.5rem;
+    }
+    
+    .step-header h3 {
+        font-size: 1.5rem;
+    }
+    
+    .journey-strip {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        padding: 1rem;
+    }
+    
+    .journey-strip span {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .step-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+    
+    .journey-strip {
+        font-size: 0.85rem;
     }
 }
 

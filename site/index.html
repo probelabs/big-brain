@@ -30,22 +30,34 @@
                     When your AI needs a <span class="gradient-text">bigger brain</span>
                 </h1>
                 <p class="hero-subtitle">
-                    When AI stalls or loops, give it an elegant exit. BigBrain extract all necessary context about current task and offload thinking to another model.
+                    When AI stalls or loops, give it an elegant exit. BigBrain extracts the necessary context for your current task and offloads the heavy thinking to another model.
                 </p>
                 <div class="model-info" aria-label="Compatible models">
                     <p class="model-text">Works with any model but shines with ChatGPT 5 Pro, Grok Heavy, and Claude Opus</p>
                 </div>
                 
-                <div class="hero-install">
-                    <h3>Quick Start</h3>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Start: Install → First Use → Results -->
+    <section id="quickstart" class="quickstart-section">
+        <div class="container">
+            <div class="steps-container">
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">1</div>
+                        <h3>Install BigBrain</h3>
+                    </div>
+                    <p class="step-description">Select your setup method and copy the command to add BigBrain as an MCP server.</p>
                     <div class="install-tabs">
                         <button class="tab-btn active" onclick="switchTab('claude')">Claude Code</button>
                         <button class="tab-btn" onclick="switchTab('cursor')">Cursor & Others</button>
                     </div>
                     <div class="tab-content active" id="tab-claude">
-                        <div class="command-box hero-command">
-                            <pre><code id="hero-install-cmd">claude mcp add -- npx -y @buger/big-brain@latest</code></pre>
-                            <button class="copy-btn" onclick="copyHeroCommand()">
+                        <div class="command-box">
+                            <pre><code id="qs-claude-cmd">claude mcp add -- npx -y @buger/big-brain@latest</code></pre>
+                            <button class="copy-btn" onclick="copyFrom('qs-claude-cmd', this)">
                                 <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                                     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
@@ -54,8 +66,8 @@
                         </div>
                     </div>
                     <div class="tab-content" id="tab-cursor">
-                        <div class="command-box hero-command">
-<pre><code id="hero-cursor-cmd">{
+                        <div class="command-box">
+<pre><code id="qs-cursor-cmd">{
   "mcpServers": {
     "big-brain": {
       "command": "npx",
@@ -63,7 +75,7 @@
     }
   }
 }</code></pre>
-                            <button class="copy-btn" onclick="copyHeroCursorCommand()">
+                            <button class="copy-btn" onclick="copyFrom('qs-cursor-cmd', this)">
                                 <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                                     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
@@ -72,6 +84,57 @@
                         </div>
                     </div>
                 </div>
+                
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">2</div>
+                        <h3>Ask AI to use BigBrain</h3>
+                    </div>
+                    <p class="step-description">When your AI gets stuck, loops, or loses context - ask it to use BigBrain to extract relevant code and context.</p>
+                    <div class="instruction-box">
+                        <p><strong>Example:</strong></p>
+                        <p>"Ask BigBrain to help me with this React component issue"</p>
+                    </div>
+                    <div class="optional-automation">
+                        <h4>💡 Optional: Automate this step</h4>
+                        <p>Add this to your <code>CLAUDE.md</code> file so your AI automatically knows when to use BigBrain:</p>
+                        <div class="command-box">
+<pre><code id="claude-md-instruction"># BigBrain Integration
+Whenever you get stuck and can't find a solution - just ask BigBrain MCP for advice.</code></pre>
+                            <button class="copy-btn" onclick="copyFrom('claude-md-instruction', this)">
+                                <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">3</div>
+                        <h3>Get External Advice</h3>
+                    </div>
+                    <p class="step-description">Your AI prepares the question with context. BigBrain extracts code and copies everything to clipboard. Open fresh AI chat, paste, and get the solution.</p>
+                    <div class="pro-tip">
+                        <strong>💡 Pro Tip:</strong> Use advanced models like <strong>ChatGPT 5 Pro</strong>, <strong>Grok Heavy</strong>, or <strong>Claude Opus</strong> for best results with complex analysis.
+                    </div>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">4</div>
+                        <h3>Return with Solution</h3>
+                    </div>
+                    <p class="step-description">Copy the external AI's response and return to your original chat. Paste the solution to continue with fresh insights.</p>
+                </div>
+            </div>
+            
+            <div class="journey-visual">
+                <div class="journey-strip">
+                    <span>Stuck</span> → <span>Ask BigBrain</span> → <span>External advice</span> → <span>Return solution</span> → <span>Continue</span>
+                </div>
             </div>
         </div>
     </section>
@@ -79,18 +142,18 @@
     <!-- Video Demo Section -->
     <section id="demo" class="demo-section">
         <div class="container">
-            <h2 class="section-title">See Big Brain in <span class="gradient-text">Action</span></h2>
+            <h2 class="section-title">See BigBrain in <span class="gradient-text">Action</span></h2>
             <div class="video-container">
                 <div class="video-placeholder">
                     <div class="play-button">▶</div>
                     <p>Demo video coming soon</p>
-                    <small>Watch how Big Brain transforms complex coding questions</small>
+                    <small>Watch how BigBrain transforms complex coding questions</small>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Why Big Brain Section -->
+    <!-- Why BigBrain Section -->
     <section id="why" class="why-section">
         <div class="container">
             <div class="why-content">
@@ -101,7 +164,7 @@
                     </div>
                     <div class="solution-text">
                         <h2>The Solution</h2>
-                        <p>Big Brain scopes the exact code and surrounding context, formats it into a minimal, paste‑ready prompt pack, and lets you hand the problem to a bigger model (<strong>ChatGPT&nbsp;5&nbsp;Pro</strong>, <strong>Grok&nbsp;Heavy</strong>, <strong>Claude&nbsp;Opus</strong>) - or any model you prefer - in a fresh session.</p>
+                        <p>BigBrain scopes the exact code and surrounding context, formats it into a minimal, paste‑ready prompt pack, and lets you hand the problem to a bigger model (<strong>ChatGPT&nbsp;5&nbsp;Pro</strong>, <strong>Grok&nbsp;Heavy</strong>, <strong>Claude&nbsp;Opus</strong>) - or any model you prefer - in a fresh session.</p>
                     </div>
                 </div>
                 
@@ -146,7 +209,7 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-info">
-                    <h3>Big Brain</h3>
+                    <h3>BigBrain</h3>
                     <p>When your AI needs a bigger brain</p>
                 </div>
                 <div class="footer-links">
@@ -182,6 +245,38 @@
                 console.error('Copy failed:', err);
             }
             document.body.removeChild(textArea);
+        }
+    }
+
+    // Generic helper for copy buttons (Quick Start)
+    function copyFrom(elementId, btn) {
+        const el = document.getElementById(elementId);
+        if (!el) return;
+        const text = el.textContent.trim();
+        copyToClipboard(text);
+        if (btn) {
+            btn.classList.add('copied');
+            setTimeout(() => {
+                btn.classList.remove('copied');
+            }, 2000);
+        }
+    }
+
+    // Missing earlier: copy function for Cursor JSON in hero (kept for backward compatibility)
+    function copyHeroCursorCommand() {
+        const el = document.getElementById('hero-cursor-cmd');
+        if (!el) return;
+        const command = el.textContent.trim();
+        copyToClipboard(command);
+        const button = document.querySelector('#tab-cursor .copy-btn');
+        if (button) {
+            const label = button.querySelector('.copy-text');
+            if (label) {
+                const originalText = label.textContent;
+                label.textContent = 'Copied!';
+                button.classList.add('copied');
+                setTimeout(() => { label.textContent = originalText; button.classList.remove('copied'); }, 2000);
+            }
         }
     }
 
