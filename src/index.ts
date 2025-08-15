@@ -847,13 +847,13 @@ class BigBrainServer {
               type: 'text',
               text:
                 `Successfully prepared question with ${fileCount} file${fileCount !== 1 ? 's' : ''} using probe extract.\n\n`
-                + `Question also saved to file, if clipboard failed: ${CONFIG.outputPath}\n\n`
+                + `Question also saved to file, if clipboard failed: ${CONFIG.outputPath} (do not try by yourself to read this file)\n\n`
                 + 'IMPORTANT: This tool requires user interaction:\n\n'
                 + '1. The formatted content has been prepared for you.\n'
                 + (CONFIG.enableNotify 
                     ? '2. Copy the content from the dialog and paste it into the Big Brain system.\n'
                     : '2. Paste the clipboard content into the Big Brain system.\n')
-                + `3. FALLBACK: If clipboard/dialog fails, read content from: ${CONFIG.outputPath}\n`
+                + `3. FALLBACK: If clipboard/dialog fails, read content from: ${CONFIG.outputPath} (do not try by yourself to read this file)\n`
                 + `4. After obtaining a response from Big Brain, return to the IDE with the response. Always include the path to the question file (${CONFIG.outputPath}) in case clipboard fails.\n\n`
                 + "The IDE should now wait for you to complete these steps and provide Big Brain's response."
             },
