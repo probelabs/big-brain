@@ -159,25 +159,80 @@ class NeuralNetwork {
     }
 }
 
-// Copy to clipboard functionality
-function copyInstallCommand() {
-    const command = document.getElementById('install-cmd').textContent;
-    const copyBtn = document.querySelector('.copy-btn');
-    const copyText = copyBtn.querySelector('.copy-text');
+// Copy Cursor install command
+function copyCursorCommand() {
+    const command = document.getElementById('cursor-install-cmd').textContent;
+    const copyBtn = document.querySelector('.alt-command .copy-btn');
+    const copyIcon = copyBtn.querySelector('.copy-icon');
     
     navigator.clipboard.writeText(command).then(() => {
         // Visual feedback
         copyBtn.classList.add('copied');
-        copyText.textContent = 'Copied!';
+        copyIcon.innerHTML = '<path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>';
         
         setTimeout(() => {
             copyBtn.classList.remove('copied');
-            copyText.textContent = 'Copy';
+            copyIcon.innerHTML = '<rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2 2v1"></path>';
         }, 2000);
     }).catch(err => {
         console.error('Failed to copy: ', err);
         // Fallback for older browsers
-        fallbackCopyTextToClipboard(command, copyBtn, copyText);
+        fallbackCopyTextToClipboard(command, copyBtn, copyIcon);
+    });
+}
+
+// Copy to clipboard functionality
+function copyInstallCommand() {
+    const command = document.getElementById('install-cmd').textContent;
+    const copyBtn = document.querySelector('#install .copy-btn');
+    const copyIcon = copyBtn.querySelector('.copy-icon');
+    
+    navigator.clipboard.writeText(command).then(() => {
+        // Visual feedback
+        copyBtn.classList.add('copied');
+        copyIcon.innerHTML = '<path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>';
+        
+        setTimeout(() => {
+            copyBtn.classList.remove('copied');
+            copyIcon.innerHTML = '<rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>';
+        }, 2000);
+    }).catch(err => {
+        console.error('Failed to copy: ', err);
+        // Fallback for older browsers
+        fallbackCopyTextToClipboard(command, copyBtn, copyIcon);
+    });
+}
+
+// Tab switching functionality
+function switchTab(tabName) {
+    // Remove active class from all tab buttons and content
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+    
+    // Add active class to clicked button and corresponding content
+    event.target.classList.add('active');
+    document.getElementById(`tab-${tabName}`).classList.add('active');
+}
+
+// Copy hero cursor install command
+function copyHeroCursorCommand() {
+    const command = document.getElementById('hero-cursor-cmd').textContent;
+    const copyBtn = event.target.closest('.copy-btn');
+    const copyIcon = copyBtn.querySelector('.copy-icon');
+    
+    navigator.clipboard.writeText(command).then(() => {
+        // Visual feedback
+        copyBtn.classList.add('copied');
+        copyIcon.innerHTML = '<path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>';
+        
+        setTimeout(() => {
+            copyBtn.classList.remove('copied');
+            copyIcon.innerHTML = '<rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>';
+        }, 2000);
+    }).catch(err => {
+        console.error('Failed to copy: ', err);
+        // Fallback for older browsers
+        fallbackCopyTextToClipboard(command, copyBtn, copyIcon);
     });
 }
 
@@ -185,25 +240,25 @@ function copyInstallCommand() {
 function copyHeroCommand() {
     const command = document.getElementById('hero-install-cmd').textContent;
     const copyBtn = document.querySelector('.hero-command .copy-btn');
-    const copyText = copyBtn.querySelector('.copy-text');
+    const copyIcon = copyBtn.querySelector('.copy-icon');
     
     navigator.clipboard.writeText(command).then(() => {
         // Visual feedback
         copyBtn.classList.add('copied');
-        copyText.textContent = 'Copied!';
+        copyIcon.innerHTML = '<path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>';
         
         setTimeout(() => {
             copyBtn.classList.remove('copied');
-            copyText.textContent = 'Copy';
+            copyIcon.innerHTML = '<rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>';
         }, 2000);
     }).catch(err => {
         console.error('Failed to copy: ', err);
         // Fallback for older browsers
-        fallbackCopyTextToClipboard(command, copyBtn, copyText);
+        fallbackCopyTextToClipboard(command, copyBtn, copyIcon);
     });
 }
 
-function fallbackCopyTextToClipboard(text, copyBtn, copyText) {
+function fallbackCopyTextToClipboard(text, copyBtn, copyIcon) {
     const textArea = document.createElement('textarea');
     textArea.value = text;
     textArea.style.position = 'fixed';
@@ -217,11 +272,11 @@ function fallbackCopyTextToClipboard(text, copyBtn, copyText) {
         const successful = document.execCommand('copy');
         if (successful) {
             copyBtn.classList.add('copied');
-            copyText.textContent = 'Copied!';
+            copyIcon.innerHTML = '<path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>';
             
             setTimeout(() => {
                 copyBtn.classList.remove('copied');
-                copyText.textContent = 'Copy';
+                copyIcon.innerHTML = '<rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>';
             }, 2000);
         }
     } catch (err) {
@@ -283,17 +338,27 @@ function initScrollAnimations() {
     });
 }
 
-// Parallax effect for hero section
+// Parallax effect for hero section with fade and scale
 function initParallaxEffect() {
     const hero = document.querySelector('.hero');
     const brainAnimation = document.querySelector('.brain-animation');
     
     window.addEventListener('scroll', () => {
         const scrolled = window.pageYOffset;
-        const parallax = scrolled * 0.5;
+        const heroHeight = hero ? hero.offsetHeight : window.innerHeight;
+        const scrollProgress = Math.min(scrolled / (heroHeight * 0.8), 1);
         
         if (brainAnimation) {
-            brainAnimation.style.transform = `translateY(${parallax}px)`;
+            // Parallax movement
+            const parallax = scrolled * 0.3;
+            
+            // Calculate fade and scale based on scroll progress
+            const opacity = Math.max(1 - (scrollProgress * 1.5), 0);
+            const scale = Math.max(1 - (scrollProgress * 0.5), 0.3);
+            
+            // Apply all transformations
+            brainAnimation.style.transform = `translateY(${parallax}px) scale(${scale})`;
+            brainAnimation.style.opacity = opacity;
         }
     });
 }

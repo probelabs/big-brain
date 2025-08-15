@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Big Brain - When your AI needs a bigger brain</title>
-    <meta name="description" content="Big Brain is an MCP server that packages precise code context into a clean, paste‑ready prompt so you can hand stuck problems to premium models (ChatGPT 5 Pro, Grok Heavy, Claude Opus) — or any model — without session noise.">
+    <meta name="description" content="Big Brain is an MCP server that packages precise code context into a clean, paste‑ready prompt so you can hand stuck problems to premium models (ChatGPT 5 Pro, Grok Heavy, Claude Opus) - or any model - without session noise.">
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,95 +26,55 @@
                     <div class="neural-pulse pulse-2"></div>
                     <div class="neural-pulse pulse-3"></div>
                 </div>
-                <p class="kicker">Stop the loop. Ship the fix.</p>
                 <h1 class="hero-title">
                     When your AI needs a <span class="gradient-text">bigger brain</span>
                 </h1>
                 <p class="hero-subtitle">
-                    When your model stalls or loops, give it an elegant exit. Big Brain extracts the exact code and context and prepares a clean, paste‑ready pack for a fresh session.
+                    When AI stalls or loops, give it an elegant exit. BigBrain extract all necessary context about current task and offload thinking to another model.
                 </p>
-                <div class="model-badges" aria-label="Compatible models">
-                    <span class="badge">Works with any model</span>
-                    <span class="badge">Great with ChatGPT&nbsp;5&nbsp;Pro</span>
-                    <span class="badge">Grok&nbsp;Heavy</span>
-                    <span class="badge">Claude&nbsp;Opus</span>
+                <div class="model-info" aria-label="Compatible models">
+                    <p class="model-text">Works with any model but shines with ChatGPT 5 Pro, Grok Heavy, and Claude Opus</p>
                 </div>
                 
                 <div class="hero-install">
-                    <h3>Quick Start with Claude Code</h3>
-                    <div class="command-box hero-command">
-                        <pre><code id="hero-install-cmd">claude mcp add -- npx -y @buger/big-brain@latest --notify --sound</code></pre>
-                        <button class="copy-btn" onclick="copyHeroCommand()">
-                            <span class="copy-icon">📋</span>
-                            <span class="copy-text">Copy</span>
-                        </button>
+                    <h3>Quick Start</h3>
+                    <div class="install-tabs">
+                        <button class="tab-btn active" onclick="switchTab('claude')">Claude Code</button>
+                        <button class="tab-btn" onclick="switchTab('cursor')">Cursor & Others</button>
                     </div>
-                    <p class="install-note">Includes native notifications and sound alerts</p>
-                    <a href="#install" class="install-link">See other installation options →</a>
-                </div>
-                
-                <div class="hero-cta">
-                    <a href="#install" class="cta-button primary">Install Big Brain</a>
-                    <a href="#demo" class="cta-button secondary">See Demo</a>
-                    <a href="#why" class="cta-button secondary">Why Big Brain?</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Why Big Brain Section -->
-    <section id="why" class="why-section">
-        <div class="container">
-            <div class="why-content">
-                <div class="problem-solution">
-                    <div class="problem-text">
-                        <h2>The Problem</h2>
-                        <p>When large models get trapped in chat history—looping, losing the thread across tool calls, or burning tokens chasing context—progress stalls. You need a clean exit that strips the noise and isolates only the code that matters.</p>
+                    <div class="tab-content active" id="tab-claude">
+                        <div class="command-box hero-command">
+                            <pre><code id="hero-install-cmd">claude mcp add -- npx -y @buger/big-brain@latest</code></pre>
+                            <button class="copy-btn" onclick="copyHeroCommand()">
+                                <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
-                    <div class="solution-text">
-                        <h2>The Solution</h2>
-                        <p>Big Brain scopes the exact code and surrounding context, formats it into a minimal, paste‑ready prompt pack, and lets you hand the problem to a bigger model (<strong>ChatGPT&nbsp;5&nbsp;Pro</strong>, <strong>Grok&nbsp;Heavy</strong>, <strong>Claude&nbsp;Opus</strong>)—or any model you prefer—in a fresh session.</p>
-                    </div>
-                </div>
-                
-                <div class="how-it-works">
-                    <h3>How it works:</h3>
-                    <ol class="simple-steps">
-                        <li><strong>Scope:</strong> Describe the file, error, or test. Big Brain extracts only the relevant code &amp; context.</li>
-                        <li><strong>Pack:</strong> Builds a clean, structured prompt pack for AI consumption.</li>
-                        <li><strong>Solve:</strong> You get a native notification and the pack on your clipboard—open a fresh AI session and paste.</li>
-                    </ol>
-                </div>
-
-                <div class="feature-callout">
-                    <h4>New: Notification + Clipboard flow</h4>
-                    <ul class="checklist">
-                        <li>No modal dialogs — runs in the background</li>
-                        <li>Native OS notification when your context pack is ready (<code>--notify</code>)</li>
-                        <li>Optional sound cue (<code>--sound</code>)</li>
-                        <li>Paste into a clean thread — zero session noise</li>
-                    </ul>
-                    <pre class="inline-command"><code>claude mcp add -- npx -y @buger/big-brain@latest --notify --sound</code></pre>
-                </div>
-
-                <div class="value-props">
-                    <div class="prop">
-                        <span class="prop-icon">🎯</span>
-                        <span>Kill session noise (fresh threads, clean context)</span>
-                    </div>
-                    <div class="prop">
-                        <span class="prop-icon">🚀</span>
-                        <span>Premium‑ready, model‑agnostic</span>
-                    </div>
-                    <div class="prop">
-                        <span class="prop-icon">🔧</span>
-                        <span>Native notifications + clipboard (no dialogs)</span>
+                    <div class="tab-content" id="tab-cursor">
+                        <div class="command-box hero-command">
+<pre><code id="hero-cursor-cmd">{
+  "mcpServers": {
+    "big-brain": {
+      "command": "npx",
+      "args": ["-y", "@buger/big-brain@latest"]
+    }
+  }
+}</code></pre>
+                            <button class="copy-btn" onclick="copyHeroCursorCommand()">
+                                <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
-
 
     <!-- Video Demo Section -->
     <section id="demo" class="demo-section">
@@ -130,50 +90,35 @@
         </div>
     </section>
 
-    <!-- Installation Section -->
-    <section id="install" class="install-section">
+    <!-- Why Big Brain Section -->
+    <section id="why" class="why-section">
         <div class="container">
-            <h2 class="section-title">Easy <span class="gradient-text">Installation</span></h2>
-            <div class="install-content">
-                <div class="install-command">
-                    <h3>One Command Setup</h3>
-                    <div class="command-box">
-                        <pre><code id="install-cmd">claude mcp add -- npx -y @buger/big-brain@latest --notify --sound</code></pre>
-                        <button class="copy-btn" onclick="copyInstallCommand()">
-                            <span class="copy-icon">📋</span>
-                            <span class="copy-text">Copy</span>
-                        </button>
+            <div class="why-content">
+                <div class="problem-solution">
+                    <div class="problem-text">
+                        <h2>The Problem</h2>
+                        <p>When large models get trapped in chat history - looping, losing the thread across tool calls, or burning tokens chasing context - progress stalls. You need a clean exit that strips the noise and isolates only the code that matters.</p>
                     </div>
-                    <p class="install-note">Includes native notifications and sound alerts</p>
-                </div>
-                <div class="install-alternatives">
-                    <h4>Other Installation Methods</h4>
-                    <div class="alt-commands">
-                        <div class="alt-command">
-                            <h5>Cursor IDE</h5>
-                            <pre><code>Add to Cursor's MCP settings:
-{
-  "mcpServers": {
-    "big-brain": {
-      "command": "npx",
-      "args": ["-y", "@buger/big-brain@latest", "--notify", "--sound"]
-    }
-  }
-}</code></pre>
-                        </div>
-                        <div class="alt-command">
-                            <h5>Global Installation</h5>
-                            <pre><code>npm install -g @buger/big-brain</code></pre>
-                        </div>
-                        <div class="alt-command">
-                            <h5>Direct npx Usage</h5>
-                            <pre><code>npx -y @buger/big-brain@latest</code></pre>
-                        </div>
+                    <div class="solution-text">
+                        <h2>The Solution</h2>
+                        <p>Big Brain scopes the exact code and surrounding context, formats it into a minimal, paste‑ready prompt pack, and lets you hand the problem to a bigger model (<strong>ChatGPT&nbsp;5&nbsp;Pro</strong>, <strong>Grok&nbsp;Heavy</strong>, <strong>Claude&nbsp;Opus</strong>) - or any model you prefer - in a fresh session.</p>
                     </div>
                 </div>
+                
+                <div class="how-it-works">
+                    <h3>How it works:</h3>
+                    <ol class="simple-steps">
+                        <li><strong>Request:</strong> Ask your AI to use BigBrain when it gets stuck or needs fresh context.</li>
+                        <li><strong>Extract:</strong> BigBrain automatically finds relevant code using Probe and formats it perfectly.</li>
+                        <li><strong>Transfer:</strong> Get a notification with the context pack ready to paste into any AI model.</li>
+                    </ol>
+                </div>
+
+
             </div>
         </div>
     </section>
+
 
     <!-- Probe Ecosystem Section -->
     <section class="ecosystem-section">
@@ -182,29 +127,15 @@
             <div class="ecosystem-content">
                 <div class="ecosystem-info">
                     <h3>Built on Probe's Foundation</h3>
-                    <p>Big Brain leverages the powerful <a href="https://github.com/buger/probe" target="_blank">Probe project</a> for intelligent code extraction and analysis. Together, they form a comprehensive toolkit for AI-assisted development.</p>
-                    <div class="ecosystem-benefits">
-                        <div class="benefit">
-                            <span class="benefit-icon">🔍</span>
-                            <span>Smart Code Extraction</span>
-                        </div>
-                        <div class="benefit">
-                            <span class="benefit-icon">🎯</span>
-                            <span>Context-Aware Analysis</span>
-                        </div>
-                        <div class="benefit">
-                            <span class="benefit-icon">🚀</span>
-                            <span>Developer Productivity</span>
-                        </div>
-                    </div>
+                    <p>BigBrain uses <a href="https://probeai.dev/" target="_blank">Probe</a> to intelligently extract relevant code. When your AI mentions specific files or functions in its BigBrain request, Probe automatically discovers and includes all related dependencies, types, and context.</p>
+                    
+                    <p>This smart extraction means the AI doesn't need to manually specify every related file. It just describes what it's analyzing, and Probe ensures it gets all the code context needed to provide accurate solutions.</p>
                 </div>
                 <div class="probe-attribution">
                     <div class="probe-logo">
-                        <div class="probe-icon">🔬</div>
-                        <h4>Probe</h4>
+                        <img src="https://probeai.dev/logo.png" alt="Probe" class="probe-icon">
                     </div>
-                    <p>The intelligent code analysis engine powering Big Brain</p>
-                    <a href="https://github.com/buger/probe" target="_blank" class="probe-link">Explore Probe →</a>
+                    <a href="https://probeai.dev/" target="_blank" class="probe-link">Explore Probe →</a>
                 </div>
             </div>
         </div>

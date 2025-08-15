@@ -109,6 +109,8 @@ body {
     width: 200px;
     height: 200px;
     margin: 0 auto 3rem;
+    z-index: 1;
+    transition: all 0.3s ease-out;
 }
 
 .brain-core {
@@ -137,19 +139,19 @@ body {
 .pulse-1 {
     width: 120px;
     height: 120px;
-    animation-delay: 0s;
+    animation-delay: -1s;
 }
 
 .pulse-2 {
     width: 160px;
     height: 160px;
-    animation-delay: 1s;
+    animation-delay: -2s;
 }
 
 .pulse-3 {
     width: 200px;
     height: 200px;
-    animation-delay: 2s;
+    animation-delay: -3s;
 }
 
 @keyframes brain-pulse {
@@ -260,6 +262,47 @@ body {
 
 .install-link:hover {
     color: var(--accent-cyan);
+}
+
+/* Installation Tabs */
+.install-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    justify-content: center;
+}
+
+.tab-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 0.5rem 1rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: var(--transition-smooth);
+    backdrop-filter: blur(10px);
+}
+
+.tab-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: var(--accent-purple);
+    color: var(--text-primary);
+}
+
+.tab-btn.active {
+    background: var(--accent-purple);
+    border-color: var(--accent-purple);
+    color: white;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
 }
 
 /* Why Big Brain Section */
@@ -488,13 +531,20 @@ body {
 
 .command-box pre {
     font-family: var(--font-mono);
-    font-size: 1rem;
+    font-size: 0.9rem;
     color: var(--accent-cyan);
     margin: 0;
     padding-right: 3rem;
     overflow-x: auto;
+    white-space: nowrap;
+    word-break: keep-all;
+}
+
+/* Override for multiline content in tabs */
+#tab-cursor .command-box pre {
     white-space: pre-wrap;
-    word-break: break-all;
+    word-break: keep-all;
+    text-align: left;
 }
 
 .copy-btn {
@@ -504,12 +554,14 @@ body {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid var(--border-color);
     border-radius: 6px;
-    padding: 0.5rem 1rem;
+    padding: 0.5rem;
     color: var(--text-primary);
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
     font-size: 0.9rem;
     transition: var(--transition-smooth);
     backdrop-filter: blur(10px);
@@ -539,8 +591,8 @@ body {
 }
 
 .alt-commands {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    display: flex;
+    flex-direction: column;
     gap: 1.5rem;
 }
 
@@ -558,14 +610,21 @@ body {
     color: var(--accent-cyan);
 }
 
+.alt-command .command-box {
+    margin-bottom: 0;
+}
+
 .alt-command pre {
     font-family: var(--font-mono);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: var(--text-secondary);
     background: var(--bg-primary);
     padding: 1rem;
     border-radius: 6px;
     overflow-x: auto;
+    padding-right: 3rem;
+    white-space: pre-wrap;
+    word-break: keep-all;
 }
 
 /* Ecosystem Section */
@@ -592,6 +651,7 @@ body {
     color: var(--text-secondary);
     line-height: 1.7;
     margin-bottom: 2rem;
+    font-size: 1.1rem;
 }
 
 .ecosystem-info a {
@@ -641,8 +701,12 @@ body {
 }
 
 .probe-icon {
-    font-size: 3rem;
-    margin-bottom: 0.5rem;
+    max-width: 120px;
+    max-height: 120px;
+    height: auto;
+    width: auto;
+    object-fit: contain;
+    margin-bottom: 1.5rem;
 }
 
 .probe-logo h4 {
@@ -848,6 +912,20 @@ body {
     font-size: 0.85rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
+}
+
+.model-info {
+    display: flex;
+    justify-content: center;
+    margin: 0.75rem 0 1.75rem;
+}
+
+.model-text {
+    color: var(--text-muted);
+    font-size: 1rem;
+    text-align: center;
+    line-height: 1.5;
+    opacity: 0.8;
 }
 
 .model-badges {
