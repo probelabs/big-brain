@@ -729,9 +729,16 @@ class BigBrainServer {
             json: false  // Get raw string output to avoid probe's JSON parsing issues
           });
         } catch (probeError: any) {
+          const errorDetails = [
+            `Error message: ${probeError.message || 'Unknown probe error'}`,
+            probeError.stack ? `Stack trace: ${probeError.stack}` : null,
+            probeError.stdout ? `Stdout: ${probeError.stdout}` : null,
+            probeError.stderr ? `Stderr: ${probeError.stderr}` : null
+          ].filter(Boolean).join('\n');
+          
           throw new McpError(
             ErrorCode.InternalError,
-            `Failed to extract code using probe: ${probeError.message || 'Unknown probe error'}`
+            `Failed to extract code using probe: ${errorDetails}`
           );
         } finally {
           // Clean up temporary file
@@ -813,9 +820,11 @@ class BigBrainServer {
         }
 
         if (fileContents.length === 0) {
+          // Include the raw probe output to help debug what files were attempted and why they failed
+          const probeOutput = typeof extractedContent === 'string' ? extractedContent : JSON.stringify(extractedContent, null, 2);
           throw new McpError(
             ErrorCode.InvalidParams,
-            'No relevant code files found in your question. Please include specific file paths and use # syntax for functions/objects (e.g., main.rs#some_function)'
+            `No relevant code files found in your question. Please include specific file paths and use # syntax for functions/objects (e.g., main.rs#some_function)\n\nProbe extract output:\n${probeOutput}`
           );
         }
 
@@ -844,7 +853,7 @@ class BigBrainServer {
                     ? '2. Copy the content from the dialog and paste it into the Big Brain system.\n'
                     : '2. Paste the clipboard content into the Big Brain system.\n')
                 + `3. FALLBACK: If clipboard/dialog fails, read content from: ${CONFIG.outputPath}\n`
-                + '4. After obtaining a response from Big Brain, return to the IDE with the response.\n\n'
+                + `4. After obtaining a response from Big Brain, return to the IDE with the response. Always include the path to the question file (${CONFIG.outputPath}) in case clipboard fails.\n\n`
                 + "The IDE should now wait for you to complete these steps and provide Big Brain's response."
             },
           ],
