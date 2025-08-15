@@ -1179,6 +1179,39 @@ body {
     opacity: 0.8;
 }
 
+.hero-links {
+    display: flex;
+    justify-content: center;
+    margin: 2rem 0 0;
+}
+
+.github-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: var(--transition-smooth);
+    backdrop-filter: blur(10px);
+}
+
+.github-link:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent-purple);
+    color: var(--text-primary);
+    transform: translateY(-1px);
+}
+
+.github-icon {
+    flex-shrink: 0;
+}
+
 .model-badges {
     display: flex;
     gap: 0.5rem;

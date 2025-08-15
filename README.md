@@ -1,57 +1,29 @@
-# Big Brain MCP Server
+# BigBrain MCP Server
 
-A Model Context Protocol (MCP) server that formats complex code questions with file context for AI assistants.
+When your AI needs a bigger brain.
 
 ## Overview
 
-Big Brain is an MCP server designed to help developers prepare detailed questions for AI coding assistants. It collects multiple source files, formats them with syntax highlighting, and combines them with your instructions in a structured format that's optimized for AI comprehension.
+BigBrain is an MCP server that gives your AI an elegant exit when it gets stuck, loops, or loses context. It intelligently extracts relevant code and context, packages it cleanly, and enables you to get fresh insights from external AI models like ChatGPT 5 Pro, Grok Heavy, or Claude Opus - then return with the solution to your original chat.
 
 ## Features
 
-- **Multi-file context collection**: Include multiple source files in your questions
-- **Automatic syntax detection**: Detects language from file extensions for proper formatting
-- **Clipboard integration**: Automatically copies formatted output to clipboard
-- **Absolute path validation**: Ensures all file paths are absolute for reliability
-- **XML-based formatting**: Structures output in a format optimized for AI parsing
+- **Intelligent Context Extraction**: Uses Probe to automatically discover and extract relevant code, dependencies, and context
+- **Round-Trip Workflow**: Get external AI advice and return to your original chat with fresh insights
+- **Clean Context Packaging**: Formats everything into minimal, paste-ready prompt packs
+- **Clipboard Integration**: Automatically copies formatted output to clipboard for seamless workflow
+- **Multi-Model Support**: Works with any AI but optimized for advanced models like ChatGPT 5 Pro, Grok Heavy, and Claude Opus
+- **Configurable Notifications**: Optional sound and desktop notifications (can be disabled with flags)
 
 ## Installation
 
-### As a global npm package
-
+### Claude Code (Recommended)
 ```bash
-npm install -g @buger/big-brain
+claude mcp add -- npx -y @buger/big-brain@latest
 ```
 
-### For development
-
-```bash
-git clone https://github.com/buger/big-brain.git
-cd big-brain
-npm install
-npm run build
-```
-
-## Usage
-
-### With Claude Desktop
-
-Add the server configuration to Claude Desktop:
-
-**macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`  
-**Windows**: `%APPDATA%/Claude/claude_desktop_config.json`
-
-### Global installation
-```json
-{
-  "mcpServers": {
-    "big-brain": {
-      "command": "big-brain"
-    }
-  }
-}
-```
-
-### Using npx (no installation required)
+### Cursor & Other MCP Clients
+Add to your MCP configuration file:
 ```json
 {
   "mcpServers": {
@@ -63,85 +35,113 @@ Add the server configuration to Claude Desktop:
 }
 ```
 
-### Local development
+## Quick Start
+
+### 1. Ask AI to use BigBrain
+
+When your AI gets stuck, loops, or loses context:
+
+```
+Ask BigBrain to help me with this React component issue
+```
+
+### 2. Get External Advice
+
+BigBrain extracts code and copies everything to clipboard. Open fresh AI chat, paste, and get the solution.
+
+### 3. Return with Solution
+
+Copy the external AI's response and return to your original chat. Paste the solution to continue with fresh insights.
+
+## Configuration Options
+
+### Disable Notifications
+
+If you prefer silent operation, you can disable sound and desktop notifications:
+
 ```json
 {
   "mcpServers": {
     "big-brain": {
-      "command": "/path/to/big-brain/build/index.js"
+      "command": "npx",
+      "args": ["-y", "@buger/big-brain@latest", "--disable-sound", "--disable-notification"]
     }
   }
 }
 ```
 
-### Available Tools
+**Available Flags:**
+- `--disable-sound`: Disable sound notifications
+- `--disable-notification`: Disable desktop notifications
 
-#### `ask_big_brain`
+## How BigBrain Works
 
-Formats and prepares complex questions with file context.
+### The Round-Trip Process
 
-**Parameters:**
-- `files` (array, required): List of absolute file paths to include
-- `instructions` (string, required): Your question or instructions for the AI
+1. **AI Preparation**: Your AI prepares a comprehensive question with all needed context and details
+2. **Intelligent Extraction**: BigBrain uses Probe to automatically scan and extract relevant code, dependencies, and context
+3. **Clean Packaging**: Everything is formatted into a minimal, paste-ready prompt pack and copied to your clipboard
+4. **External Consultation**: You paste the context pack into a fresh AI chat (ChatGPT 5 Pro, Grok Heavy, Claude Opus, etc.) to get analysis and solutions
+5. **Return Journey**: Copy the external AI's response and paste it back into your original chat to continue with fresh insights
 
-**Example:**
-```json
-{
-  "files": [
-    "/Users/username/project/src/main.ts",
-    "/Users/username/project/src/utils.ts"
-  ],
-  "instructions": "Help me refactor this code to use async/await"
-}
+### Why This Works
+
+- **Breaks Context Loops**: Fresh AI session without chat history noise
+- **Leverages Advanced Models**: Use the best AI for complex analysis
+- **Maintains Workflow**: Return to your original work with solutions
+- **Intelligent Context**: Probe ensures all relevant code is included automatically
+
+## Optional: Automate BigBrain Usage
+
+Add this to your `CLAUDE.md` file so your AI automatically knows when to use BigBrain:
+
+```markdown
+# BigBrain Integration
+Whenever you get stuck and can't find a solution - just ask BigBrain MCP for advice.
 ```
-
-**Output:**
-1. Formatted content is copied to your clipboard
-2. Content is saved to a temporary file
-3. You can then paste this into your AI assistant
 
 ## Development
 
-### Build the project
+### Local Development Setup
 
 ```bash
+git clone https://github.com/buger/big-brain.git
+cd big-brain
+npm install
 npm run build
 ```
 
-### Watch mode for development
+### Development Commands
 
 ```bash
-npm run watch
+npm run build        # Build the project
+npm run watch        # Watch mode for development
+npm run inspector    # Test with MCP Inspector
 ```
 
-### Testing with MCP Inspector
+The MCP Inspector provides a browser-based interface for testing and debugging the server.
 
-```bash
-npm run inspector
-```
-
-The Inspector provides a browser-based interface for testing and debugging the MCP server.
-
-## How It Works
-
-1. **File Collection**: The server validates and reads the specified files
-2. **Language Detection**: Automatically detects programming language from file extensions
-3. **Formatting**: Wraps code in markdown code blocks with syntax highlighting
-4. **XML Structure**: Adds XML formatting instructions for optimal AI parsing
-5. **Output**: Copies to clipboard and saves to a temporary file
-
-## Supported File Types
-
-- TypeScript (`.ts`, `.tsx`)
-- JavaScript (`.js`, `.jsx`)
-- JSON (`.json`)
-- Markdown (`.md`)
-- Other files default to plaintext
-
-## Requirements
+### Requirements
 
 - Node.js 16 or higher
 - npm or yarn
+
+## Technical Details
+
+### Built on Probe
+
+BigBrain leverages [Probe](https://probeai.dev/) for intelligent code extraction. When your AI mentions specific files or functions, Probe automatically discovers and includes all related dependencies, types, and context - no manual file specification required.
+
+### Supported File Types
+
+BigBrain works with all common programming languages and file types:
+- TypeScript/JavaScript (`.ts`, `.tsx`, `.js`, `.jsx`)
+- Python (`.py`)
+- Rust (`.rs`)
+- Go (`.go`)
+- JSON (`.json`)
+- Markdown (`.md`)
+- And many more...
 
 ## License
 
