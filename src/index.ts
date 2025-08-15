@@ -676,23 +676,29 @@ class BigBrainServer {
         {
           name: 'ask_big_brain',
           description: (
-            'Format and prepare complex questions for the Big Brain system using intelligent code extraction. '
-            + 'REQUIRES USER INTERACTION: After calling this tool, the user must confirm they '
-            + 'have pasted the content to the Big Brain system, then the result is returned. '
-            + 'CRITICAL: Your question must be SUPER DETAILED and include: '
-            + '1. ALL needed dependencies and context - do not omit anything relevant '
-            + '2. ALL specific file paths (absolute paths like /Users/username/project/src/main.rs) - include every file that might be related '
-            + '3. ALL specific objects/functions/variables/types in files using # syntax (e.g., main.rs#some_function, app.py#MyClass) - mention every symbol that could be relevant '
-            + '4. Clear explanation of what you want to understand or modify '
-            + '5. MUST include ALL related files or symbols in the supported format - never skip anything that might be connected to the question '
-            + 'The system will automatically extract relevant code using probe based on file paths mentioned in your question. BE COMPREHENSIVE - missing files or symbols will lead to incomplete analysis.'
+            '🧠 TRIGGER CONDITIONS: Use this tool when the user mentions "big brain", "BigBrain", "big-brain", or when you get stuck, loop, lose context, or need external AI consultation. '
+            + 'This tool formats complex questions for the BigBrain system using intelligent code extraction. '
+            + '\n\n⚠️ REQUIRES USER INTERACTION: After calling this tool, the user must paste the prepared content into an external AI system (ChatGPT 5 Pro, Grok Heavy, Claude Opus, etc.) and return with the response. '
+            + '\n\n🎯 WHEN TO USE: '
+            + '• User explicitly asks for "big brain" or "BigBrain" help '
+            + '• You are stuck in a loop or losing context '
+            + '• Problem is too complex for current session '
+            + '• Need fresh external AI perspective '
+            + '• User wants to leverage advanced AI models '
+            + '\n\n📋 CRITICAL REQUIREMENTS for your question: '
+            + '1. ALL specific file paths (absolute paths like /Users/username/project/src/main.rs) '
+            + '2. ALL specific functions/objects/variables/types using # syntax (e.g., main.rs#some_function, app.py#MyClass) '
+            + '3. ALL related dependencies and context - do not omit anything '
+            + '4. Clear explanation of what needs to be analyzed or modified '
+            + '5. Complete problem description with background context '
+            + '\n\n🔧 The system automatically extracts relevant code using Probe based on file paths mentioned in your question. BE COMPREHENSIVE - missing files or symbols will lead to incomplete analysis.'
           ),
           inputSchema: {
             type: 'object',
             properties: {
               question: {
                 type: 'string',
-                description: 'Super detailed question including ALL file paths, ALL specific functions/objects/variables/types (use # syntax), ALL dependencies, and ALL context needed - be comprehensive and include everything potentially relevant',
+                description: 'Comprehensive question for external AI analysis. MUST include: (1) All absolute file paths (e.g., /Users/name/project/src/file.ts), (2) All specific symbols using # syntax (e.g., file.ts#functionName, class.py#ClassName), (3) Complete problem context and what you need analyzed/fixed. Be exhaustive - missing context leads to incomplete analysis.',
               },
             },
             required: ['question'],
