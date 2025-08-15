@@ -1,6 +1,6 @@
 {
   "name": "@buger/big-brain",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "main": "build/index.js",
   "description": "MCP server for formatting complex code questions with file context",
   "type": "module",
