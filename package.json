@@ -1,6 +1,6 @@
 {
   "name": "@probelabs/big-brain",
-  "version": "0.5.8",
+  "version": "0.6.0",
   "main": "build/index.js",
   "description": "MCP server for formatting complex code questions with file context",
   "type": "module",

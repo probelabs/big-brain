@@ -28,6 +28,13 @@ import {
 // Parse command-line arguments
 const args = process.argv.slice(2);
 
+// Find --loop argument and extract prompt
+let loopPrompt: string | null = null;
+const loopIndex = args.indexOf('--loop');
+if (loopIndex !== -1 && args[loopIndex + 1]) {
+  loopPrompt = args[loopIndex + 1];
+}
+
 // Configuration
 const CONFIG = {
   outputPath: path.join(os.tmpdir(), 'big_brain_output.txt'),
@@ -35,7 +42,8 @@ const CONFIG = {
   maxFileSize: 1_000_000, // 1 MB
   // Parse command-line flags - enabled by default, disable with flags
   enableSound: !args.includes('--disable-sound'),
-  enableNotify: !args.includes('--disable-notification')
+  enableNotify: !args.includes('--disable-notification'),
+  loopPrompt: loopPrompt  // null if not in loop mode, string if enabled
 };
 
 interface BigBrainArgs {
@@ -79,10 +87,10 @@ function detectPlatform(): PlatformInfo {
 }
 
 /**
- * Plays a system sound notification if enabled.
+ * Plays a system sound notification if enabled and not in loop mode.
  */
 function playSystemSound(): void {
-  if (!CONFIG.enableSound) return;
+  if (!CONFIG.enableSound || CONFIG.loopPrompt) return;
   
   const { platform, isWSL } = detectPlatform();
   
@@ -119,11 +127,19 @@ function playSystemSound(): void {
 
 /**
  * Shows a native OS dialog with the content if enabled, otherwise uses clipboard.
+ * In loop mode, skips all user interaction and only writes to file.
  * @param content - The formatted content to display
  * @param fileCount - Number of files extracted
  * @param originalQuestion - The user's original question
  */
 async function handleOutput(content: string, fileCount: number, originalQuestion: string): Promise<void> {
+  // In loop mode, only write to file - no clipboard or notifications
+  if (CONFIG.loopPrompt) {
+    // File is already written in the main handler
+    return;
+  }
+  
+  // Original clipboard/notification logic for user mode
   if (CONFIG.enableNotify) {
     await showNotificationAndCopy(content, fileCount, originalQuestion);
   } else {
@@ -675,7 +691,24 @@ class BigBrainServer {
       tools: [
         {
           name: 'ask_big_brain',
-          description: (
+          description: CONFIG.loopPrompt ? (
+            '🧠 TRIGGER CONDITIONS: Use this tool when the user mentions "big brain", "BigBrain", "big-brain", or when you get stuck, loop, lose context, or need external AI consultation. '
+            + 'This tool formats complex questions for multi-agent AI analysis using intelligent code extraction. '
+            + '\n\n🤖 MULTI-AGENT MODE: This tool operates in loop mode for direct AI-to-AI communication. Results are saved to a file for agent processing. '
+            + '\n\n🎯 WHEN TO USE: '
+            + '• User explicitly asks for "big brain" or "BigBrain" help '
+            + '• You are stuck in a loop or losing context '
+            + '• Problem is too complex for current session '
+            + '• Need fresh external AI perspective '
+            + '• User wants to leverage advanced AI models '
+            + '\n\n📋 CRITICAL REQUIREMENTS for your question: '
+            + '1. ALL specific file paths (absolute paths like /Users/username/project/src/main.rs) '
+            + '2. ALL specific functions/objects/variables/types using # syntax (e.g., main.rs#some_function, app.py#MyClass) '
+            + '3. ALL related dependencies and context - do not omit anything '
+            + '4. Clear explanation of what needs to be analyzed or modified '
+            + '5. Complete problem description with background context '
+            + '\n\n🔧 The system automatically extracts relevant code using Probe and saves to a file for agent processing. BE COMPREHENSIVE - missing files or symbols will lead to incomplete analysis.'
+          ) : (
             '🧠 TRIGGER CONDITIONS: Use this tool when the user mentions "big brain", "BigBrain", "big-brain", or when you get stuck, loop, lose context, or need external AI consultation. '
             + 'This tool formats complex questions for the BigBrain system using intelligent code extraction. '
             + '\n\n⚠️ REQUIRES USER INTERACTION: After calling this tool, the user must paste the prepared content into an external AI system (ChatGPT 5 Pro, Grok Heavy, Claude Opus, etc.) and return with the response. '
@@ -851,7 +884,14 @@ class BigBrainServer {
           content: [
             {
               type: 'text',
-              text:
+              text: CONFIG.loopPrompt ? (
+                // Loop mode response for multi-agent systems
+                `Successfully prepared question with ${fileCount} file${fileCount !== 1 ? 's' : ''} using probe extract.\n\n`
+                + `Question saved to: ${CONFIG.outputPath}\n\n`
+                + `${CONFIG.loopPrompt}\n\n`
+                + `Pass to the agent instruction to read the question from this file: ${CONFIG.outputPath}`
+              ) : (
+                // Original user-interactive response
                 `Successfully prepared question with ${fileCount} file${fileCount !== 1 ? 's' : ''} using probe extract.\n\n`
                 + `Question also saved to file, if clipboard failed: ${CONFIG.outputPath} (do not try by yourself to read this file)\n\n`
                 + 'IMPORTANT: This tool requires user interaction:\n\n'
@@ -862,6 +902,7 @@ class BigBrainServer {
                 + `3. FALLBACK: If clipboard/dialog fails, read content from: ${CONFIG.outputPath} (do not try by yourself to read this file)\n`
                 + `4. After obtaining a response from Big Brain, return to the IDE with the response. Always include the path to the question file (${CONFIG.outputPath}) in case clipboard fails.\n\n`
                 + "The IDE should now wait for you to complete these steps and provide Big Brain's response."
+              )
             },
           ],
         };
