@@ -214,6 +214,19 @@ function switchTab(tabName) {
     document.getElementById(`tab-${tabName}`).classList.add('active');
 }
 
+// Mode switching functionality
+function switchMode(mode) {
+    // Remove active class from all mode buttons and content
+    document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.mode-content').forEach(content => content.classList.remove('active'));
+    document.querySelectorAll('.journey-strip').forEach(strip => strip.classList.remove('active'));
+    
+    // Add active class to clicked button and corresponding content
+    event.target.classList.add('active');
+    document.getElementById(`${mode}-mode-steps`).classList.add('active');
+    document.getElementById(`${mode}-journey`).classList.add('active');
+}
+
 // Copy hero cursor install command
 function copyHeroCursorCommand() {
     const command = document.getElementById('hero-cursor-cmd').textContent;

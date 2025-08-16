@@ -7,7 +7,7 @@ export default {
     if (url.hostname === 'probeai.dev' && url.pathname.startsWith('/big-brain')) {
       // Remove /big-brain from the path and proxy to the Pages site
       const newPath = url.pathname.replace('/big-brain', '') || '/';
-      const pagesUrl = `https://f9f50a0b.big-brain-cyt.pages.dev${newPath}${url.search}`;
+      const pagesUrl = `https://32054a50.big-brain-cyt.pages.dev${newPath}${url.search}`;
       
       // Fetch from the Pages deployment
       const response = await fetch(pagesUrl, {

@@ -52,7 +52,54 @@
     <!-- Quick Start: Install → First Use → Results -->
     <section id="quickstart" class="quickstart-section">
         <div class="container">
-            <div class="steps-container">
+            <!-- Mode Selection -->
+            <div class="mode-selection">
+                <h2 class="section-title">Choose Your Workflow</h2>
+                <div class="mode-tabs">
+                    <button class="mode-btn active" onclick="switchMode('external')">
+                        <div class="mode-icon">🧠</div>
+                        <div class="mode-info">
+                            <h3>External AI Mode</h3>
+                            <p>Manual consultation with advanced AI models</p>
+                        </div>
+                    </button>
+                    <button class="mode-btn" onclick="switchMode('multiagent')">
+                        <div class="mode-icon">🤖</div>
+                        <div class="mode-info">
+                            <h3>Multi-Agent Mode</h3>
+                            <p>Automated AI-to-AI communication</p>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- When to Use Section -->
+            <div class="when-to-use">
+                <h3>When to Use Each Mode</h3>
+                <div class="comparison-grid">
+                    <div class="use-case external-cases">
+                        <h4>🧠 External AI Mode</h4>
+                        <ul>
+                            <li>Complex debugging needs fresh perspective</li>
+                            <li>Leverage specialized model expertise</li>
+                            <li>Human oversight desired</li>
+                            <li>Manual consultation workflow</li>
+                        </ul>
+                    </div>
+                    <div class="use-case multiagent-cases">
+                        <h4>🤖 Multi-Agent Mode</h4>
+                        <ul>
+                            <li>Claude Code environments</li>
+                            <li>Automated agent pipelines</li>
+                            <li>No human intervention needed</li>
+                            <li>Direct agent-to-agent handoffs</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- External AI Mode Steps -->
+            <div id="external-mode-steps" class="steps-container mode-content active">
                 <div class="step-card">
                     <div class="step-header">
                         <div class="step-number">1</div>
@@ -139,10 +186,67 @@ Whenever you get stuck and can't find a solution - just ask BigBrain MCP for adv
                     <p class="step-description">Copy the external AI's response and return to your original chat. Paste the solution to continue with fresh insights.</p>
                 </div>
             </div>
+
+            <!-- Multi-Agent Mode Steps -->
+            <div id="multiagent-mode-steps" class="steps-container mode-content">
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">1</div>
+                        <h3>Configure Loop Mode</h3>
+                    </div>
+                    <p class="step-description">Set up BigBrain with the --loop flag for automated agent communication.</p>
+                    <div class="command-box">
+                        <pre><code id="ma-config-cmd">{
+  "mcpServers": {
+    "big-brain": {
+      "command": "npx",
+      "args": [
+        "-y", "@probelabs/big-brain@latest",
+        "--loop", "Now call research-agent to investigate this issue"
+      ]
+    }
+  }
+}</code></pre>
+                        <button class="copy-btn" onclick="copyFrom('ma-config-cmd', this)">
+                            <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">2</div>
+                        <h3>AI Agent Communication</h3>
+                    </div>
+                    <p class="step-description">Your AI system automatically calls BigBrain with loop mode when stuck. BigBrain extracts code and provides instructions for the next agent.</p>
+                    <div class="instruction-box">
+                        <p><strong>Automated Flow:</strong></p>
+                        <p>AI → BigBrain (--loop) → File + Agent Instructions → Next Agent</p>
+                    </div>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">3</div>
+                        <h3>Direct Agent Handoff</h3>
+                    </div>
+                    <p class="step-description">The designated agent reads the context file and continues processing automatically. No human intervention required.</p>
+                    <div class="pro-tip">
+                        <strong>🤖 Perfect for:</strong> Claude Code environments with multiple AI agents working together seamlessly.
+                    </div>
+                </div>
+            </div>
             
+            <!-- Journey Visual (mode-dependent) -->
             <div class="journey-visual">
-                <div class="journey-strip">
+                <div id="external-journey" class="journey-strip active">
                     <span>Stuck</span> → <span>Ask BigBrain</span> → <span>External advice</span> → <span>Return solution</span> → <span>Continue</span>
+                </div>
+                <div id="multiagent-journey" class="journey-strip">
+                    <span>Agent stuck</span> → <span>BigBrain --loop</span> → <span>File + Instructions</span> → <span>Next agent</span> → <span>Continue</span>
                 </div>
             </div>
         </div>

@@ -1097,10 +1097,168 @@ body {
     color: var(--accent-cyan);
 }
 
+/* Mode Selection Styles */
+.mode-selection {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.mode-selection h2 {
+    margin-bottom: 2rem;
+    color: var(--text-primary);
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+.mode-tabs {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    margin-bottom: 3rem;
+}
+
+.mode-btn {
+    background: rgba(255, 255, 255, 0.03);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem 2rem;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-width: 280px;
+    text-align: left;
+}
+
+.mode-btn:hover {
+    border-color: var(--accent-purple);
+    background: rgba(124, 58, 237, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(124, 58, 237, 0.2);
+}
+
+.mode-btn.active {
+    border-color: var(--accent-purple);
+    background: rgba(124, 58, 237, 0.15);
+    box-shadow: 0 8px 32px rgba(124, 58, 237, 0.3);
+}
+
+.mode-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+}
+
+.mode-info h3 {
+    color: var(--text-primary);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.mode-info p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+/* When to Use Section */
+.when-to-use {
+    margin-bottom: 4rem;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+}
+
+.when-to-use h3 {
+    text-align: center;
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.comparison-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.use-case h4 {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.use-case ul {
+    list-style: none;
+    padding: 0;
+}
+
+.use-case li {
+    color: var(--text-secondary);
+    padding: 0.5rem 0;
+    position: relative;
+    padding-left: 1.5rem;
+}
+
+.use-case li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: var(--accent-purple);
+    font-weight: bold;
+}
+
+/* Mode Content Switching */
+.mode-content {
+    display: none;
+}
+
+.mode-content.active {
+    display: block;
+}
+
+.journey-strip {
+    display: none;
+}
+
+.journey-strip.active {
+    display: flex;
+}
+
 /* Responsive adjustments for Quick Start */
 @media (max-width: 768px) {
     .quickstart-section {
         padding: 3rem 0 4rem;
+    }
+    
+    .mode-selection h2 {
+        font-size: 2rem;
+    }
+    
+    .mode-tabs {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .mode-btn {
+        min-width: 260px;
+        padding: 1.25rem 1.5rem;
+    }
+    
+    .comparison-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .when-to-use {
+        padding: 1.5rem;
+        margin-bottom: 3rem;
     }
     
     .steps-container {
