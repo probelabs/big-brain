@@ -56,14 +56,14 @@
             <div class="mode-selection">
                 <h2 class="section-title">Choose Your Workflow</h2>
                 <div class="mode-tabs">
-                    <button class="mode-btn active" onclick="switchMode('external')">
+                    <button class="mode-btn active" onclick="switchMode('external', this)">
                         <div class="mode-icon">🧠</div>
                         <div class="mode-info">
                             <h3>External AI Mode</h3>
                             <p>Manual consultation with advanced AI models</p>
                         </div>
                     </button>
-                    <button class="mode-btn" onclick="switchMode('multiagent')">
+                    <button class="mode-btn" onclick="switchMode('multiagent', this)">
                         <div class="mode-icon">🤖</div>
                         <div class="mode-info">
                             <h3>Multi-Agent Mode</h3>
@@ -73,33 +73,34 @@
                 </div>
             </div>
 
-            <!-- When to Use Section -->
-            <div class="when-to-use">
-                <h3>When to Use Each Mode</h3>
-                <div class="comparison-grid">
-                    <div class="use-case external-cases">
-                        <h4>🧠 External AI Mode</h4>
-                        <ul>
-                            <li>Complex debugging needs fresh perspective</li>
-                            <li>Leverage specialized model expertise</li>
-                            <li>Human oversight desired</li>
-                            <li>Manual consultation workflow</li>
-                        </ul>
-                    </div>
-                    <div class="use-case multiagent-cases">
-                        <h4>🤖 Multi-Agent Mode</h4>
-                        <ul>
-                            <li>Claude Code environments</li>
-                            <li>Automated agent pipelines</li>
-                            <li>No human intervention needed</li>
-                            <li>Direct agent-to-agent handoffs</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
             <!-- External AI Mode Steps -->
             <div id="external-mode-steps" class="steps-container mode-content active">
+                <!-- What is External AI Mode -->
+                <div class="step-card usage-guide">
+                    <div class="step-header">
+                        <div class="usage-icon">🧠</div>
+                        <h3>External AI Mode</h3>
+                    </div>
+                    <div class="mode-explanation">
+                        <p><strong>What it is:</strong> A manual workflow where you consult external AI models (ChatGPT 5 Pro, Grok Heavy, Claude Opus) for fresh insights when your current AI gets stuck.</p>
+                        <p><strong>How it works:</strong> BigBrain extracts relevant code → Copies to clipboard → You paste into external AI → Get solution → Return to original chat.</p>
+                    </div>
+                    <div class="usage-list">
+                        <div class="usage-item">
+                            <span class="usage-bullet">✓</span>
+                            <span><strong>Best for:</strong> Complex debugging that needs a fresh perspective</span>
+                        </div>
+                        <div class="usage-item">
+                            <span class="usage-bullet">✓</span>
+                            <span><strong>Advantage:</strong> Choose the right AI model for each specific problem</span>
+                        </div>
+                        <div class="usage-item">
+                            <span class="usage-bullet">✓</span>
+                            <span><strong>Control:</strong> You decide what to share and which AI to consult</span>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="step-card">
                     <div class="step-header">
                         <div class="step-number">1</div>
@@ -107,10 +108,10 @@
                     </div>
                     <p class="step-description">Select your setup method and copy the command to add BigBrain as an MCP server.</p>
                     <div class="install-tabs">
-                        <button class="tab-btn active" onclick="switchTab('claude')">Claude Code</button>
-                        <button class="tab-btn" onclick="switchTab('cursor')">Cursor & Others</button>
+                        <button class="tab-btn active" onclick="switchTab('ext-claude', this)">Claude Code</button>
+                        <button class="tab-btn" onclick="switchTab('ext-cursor', this)">Cursor & Others</button>
                     </div>
-                    <div class="tab-content active" id="tab-claude">
+                    <div class="tab-content active" id="tab-ext-claude">
                         <div class="command-box">
                             <pre><code id="qs-claude-cmd">claude mcp add -- npx -y @probelabs/big-brain@latest</code></pre>
                             <button class="copy-btn" onclick="copyFrom('qs-claude-cmd', this)">
@@ -121,13 +122,16 @@
                             </button>
                         </div>
                     </div>
-                    <div class="tab-content" id="tab-cursor">
+                    <div class="tab-content" id="tab-ext-cursor">
                         <div class="command-box">
 <pre><code id="qs-cursor-cmd">{
   "mcpServers": {
     "big-brain": {
       "command": "npx",
-      "args": ["-y", "@probelabs/big-brain@latest"]
+      "args": [
+        "-y", 
+        "@probelabs/big-brain@latest"
+      ]
     }
   }
 }</code></pre>
@@ -189,30 +193,75 @@ Whenever you get stuck and can't find a solution - just ask BigBrain MCP for adv
 
             <!-- Multi-Agent Mode Steps -->
             <div id="multiagent-mode-steps" class="steps-container mode-content">
+                <!-- What is Multi-Agent Mode -->
+                <div class="step-card usage-guide">
+                    <div class="step-header">
+                        <div class="usage-icon">🤖</div>
+                        <h3>Multi-Agent Mode</h3>
+                    </div>
+                    <div class="mode-explanation">
+                        <p><strong>What it is:</strong> Automated AI-to-AI communication for systems like Claude Code where multiple agents collaborate without human intervention.</p>
+                        <p><strong>How it works:</strong> Configure with --loop flag → AI calls BigBrain → Context saved to file → Next agent reads file → Continues processing automatically.</p>
+                    </div>
+                    <div class="usage-list">
+                        <div class="usage-item">
+                            <span class="usage-bullet">✓</span>
+                            <span><strong>Best for:</strong> Claude Code and other multi-agent environments</span>
+                        </div>
+                        <div class="usage-item">
+                            <span class="usage-bullet">✓</span>
+                            <span><strong>Automation:</strong> No clipboard, no manual steps, pure AI collaboration</span>
+                        </div>
+                        <div class="usage-item">
+                            <span class="usage-bullet">✓</span>
+                            <span><strong>Efficiency:</strong> Direct file-based handoffs between AI agents</span>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="step-card">
                     <div class="step-header">
                         <div class="step-number">1</div>
                         <h3>Configure Loop Mode</h3>
                     </div>
                     <p class="step-description">Set up BigBrain with the --loop flag for automated agent communication.</p>
-                    <div class="command-box">
-                        <pre><code id="ma-config-cmd">{
+                    <div class="install-tabs">
+                        <button class="tab-btn active" onclick="switchTab('ma-claude', this)">Claude Code</button>
+                        <button class="tab-btn" onclick="switchTab('ma-cursor', this)">Cursor & Others</button>
+                    </div>
+                    <div class="tab-content active" id="tab-ma-claude">
+                        <div class="command-box">
+                            <pre><code id="ma-claude-cmd">claude mcp add -- npx -y @probelabs/big-brain@latest --loop "Now call @agent-general-purpose to investigate this issue"</code></pre>
+                            <button class="copy-btn" onclick="copyFrom('ma-claude-cmd', this)">
+                                <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="tab-content" id="tab-ma-cursor">
+                        <div class="command-box">
+                            <pre><code id="ma-cursor-cmd">{
   "mcpServers": {
     "big-brain": {
       "command": "npx",
       "args": [
-        "-y", "@probelabs/big-brain@latest",
-        "--loop", "Now call research-agent to investigate this issue"
+        "-y", 
+        "@probelabs/big-brain@latest",
+        "--loop", 
+        "Now call @agent-general-purpose to investigate this issue"
       ]
     }
   }
 }</code></pre>
-                        <button class="copy-btn" onclick="copyFrom('ma-config-cmd', this)">
-                            <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
+                            <button class="copy-btn" onclick="copyFrom('ma-cursor-cmd', this)">
+                                <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 
@@ -239,16 +288,6 @@ Whenever you get stuck and can't find a solution - just ask BigBrain MCP for adv
                     </div>
                 </div>
             </div>
-            
-            <!-- Journey Visual (mode-dependent) -->
-            <div class="journey-visual">
-                <div id="external-journey" class="journey-strip active">
-                    <span>Stuck</span> → <span>Ask BigBrain</span> → <span>External advice</span> → <span>Return solution</span> → <span>Continue</span>
-                </div>
-                <div id="multiagent-journey" class="journey-strip">
-                    <span>Agent stuck</span> → <span>BigBrain --loop</span> → <span>File + Instructions</span> → <span>Next agent</span> → <span>Continue</span>
-                </div>
-            </div>
         </div>
     </section>
 
@@ -259,11 +298,11 @@ Whenever you get stuck and can't find a solution - just ask BigBrain MCP for adv
                 <div class="problem-solution">
                     <div class="problem-text">
                         <h2>The Problem</h2>
-                        <p>When large models get trapped in chat history - looping, losing the thread across tool calls, or burning tokens chasing context - progress stalls. You need a clean exit that strips the noise and isolates only the code that matters.</p>
+                        <p>Your AI hits the same error 5 times. It keeps suggesting code that doesn't compile. It loses track of what it was doing 10 messages ago. You know the fix, but explaining it through the existing conversation is like teaching through a broken telephone. You need a fresh start without losing context.</p>
                     </div>
                     <div class="solution-text">
                         <h2>The Solution</h2>
-                        <p>BigBrain scopes the exact code and surrounding context, formats it into a minimal, paste‑ready prompt pack, and lets you hand the problem to a bigger model (<strong>ChatGPT&nbsp;5&nbsp;Pro</strong>, <strong>Grok&nbsp;Heavy</strong>, <strong>Claude&nbsp;Opus</strong>) - or any model you prefer - in a fresh session.</p>
+                        <p>BigBrain lets your AI call for backup. It packages the exact code context, your specific problem, and nothing else. Copy to clipboard, paste into a fresh chat with a stronger model (<strong>ChatGPT&nbsp;5&nbsp;Pro</strong>, <strong>Grok&nbsp;Heavy</strong>, <strong>Claude&nbsp;Opus</strong>, or any "thinking" model), get the answer, paste it back. Or in multi-agent setups, it hands off directly to another agent. No manual file hunting, no context reconstruction.</p>
                     </div>
                 </div>
                 

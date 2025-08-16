@@ -204,27 +204,33 @@ function copyInstallCommand() {
 }
 
 // Tab switching functionality
-function switchTab(tabName) {
-    // Remove active class from all tab buttons and content
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+function switchTab(tabName, button) {
+    // Find the parent container of this tab group
+    const tabContainer = button.closest('.step-card');
+    
+    // Remove active class from all tab buttons and content within this container
+    tabContainer.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    tabContainer.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
     
     // Add active class to clicked button and corresponding content
-    event.target.classList.add('active');
-    document.getElementById(`tab-${tabName}`).classList.add('active');
+    button.classList.add('active');
+    const targetTab = tabContainer.querySelector(`#tab-${tabName}`);
+    if (targetTab) {
+        targetTab.classList.add('active');
+    }
 }
 
 // Mode switching functionality
-function switchMode(mode) {
+function switchMode(mode, button) {
     // Remove active class from all mode buttons and content
     document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
     document.querySelectorAll('.mode-content').forEach(content => content.classList.remove('active'));
-    document.querySelectorAll('.journey-strip').forEach(strip => strip.classList.remove('active'));
     
     // Add active class to clicked button and corresponding content
-    event.target.classList.add('active');
-    document.getElementById(`${mode}-mode-steps`).classList.add('active');
-    document.getElementById(`${mode}-journey`).classList.add('active');
+    button.classList.add('active');
+    const modeSteps = document.getElementById(`${mode}-mode-steps`);
+    
+    if (modeSteps) modeSteps.classList.add('active');
 }
 
 // Copy hero cursor install command

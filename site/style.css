@@ -302,7 +302,15 @@ body {
 }
 
 .tab-content.active {
-    display: block;
+    display: block !important;
+}
+
+/* Ensure proper code formatting */
+.command-box pre,
+.command-box code {
+    white-space: pre !important;
+    word-wrap: normal;
+    overflow-x: auto;
 }
 
 /* Why Big Brain Section */
@@ -926,7 +934,7 @@ body {
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    gap: 3rem;
+    gap: 4rem;
 }
 
 .step-card {
@@ -937,14 +945,14 @@ body {
     position: relative;
     transition: var(--transition-smooth);
     backdrop-filter: blur(10px);
+    margin-bottom: 3rem;
 }
 
-.step-card:hover {
-    border-color: var(--accent-purple);
-    background: rgba(255, 255, 255, 0.05);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 32px rgba(124, 58, 237, 0.1);
+.step-card:last-child {
+    margin-bottom: 0;
 }
+
+/* Removed hover effect for step cards */
 
 .step-header {
     display: flex;
@@ -1060,42 +1068,6 @@ body {
     line-height: 1.5;
 }
 
-.journey-visual {
-    margin-top: 4rem;
-    text-align: center;
-}
-
-.journey-strip {
-    display: inline-flex;
-    align-items: center;
-    gap: 1rem;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-lg);
-    padding: 1.5rem 2rem;
-    font-size: 1rem;
-    color: var(--text-secondary);
-    backdrop-filter: blur(10px);
-}
-
-.journey-strip span {
-    padding: 0.5rem 1rem;
-    background: rgba(124, 58, 237, 0.2);
-    border-radius: var(--border-radius);
-    color: var(--text-primary);
-    font-weight: 600;
-    white-space: nowrap;
-}
-
-.journey-strip span:first-child {
-    background: rgba(236, 72, 153, 0.2);
-    color: var(--accent-pink);
-}
-
-.journey-strip span:last-child {
-    background: rgba(6, 182, 212, 0.2);
-    color: var(--accent-cyan);
-}
 
 /* Mode Selection Styles */
 .mode-selection {
@@ -1139,9 +1111,10 @@ body {
 }
 
 .mode-btn.active {
-    border-color: var(--accent-purple);
+    border: 2px solid var(--accent-purple);
     background: rgba(124, 58, 237, 0.15);
     box-shadow: 0 8px 32px rgba(124, 58, 237, 0.3);
+    transform: translateY(-2px);
 }
 
 .mode-icon {
@@ -1162,55 +1135,80 @@ body {
     line-height: 1.4;
 }
 
-/* When to Use Section */
-.when-to-use {
-    margin-bottom: 4rem;
-    padding: 2rem;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-lg);
+
+/* Usage Guide Styling */
+.usage-guide {
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
+    border: 1px solid rgba(124, 58, 237, 0.3);
 }
 
-.when-to-use h3 {
-    text-align: center;
-    color: var(--text-primary);
-    font-size: 1.5rem;
+.usage-guide .step-header {
+    align-items: center;
+    gap: 1rem;
     margin-bottom: 1.5rem;
 }
 
-.comparison-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
+.mode-explanation {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(124, 58, 237, 0.2);
 }
 
-.use-case h4 {
-    color: var(--text-primary);
-    font-size: 1.1rem;
+.mode-explanation p {
+    color: var(--text-secondary);
+    line-height: 1.7;
     margin-bottom: 1rem;
+    font-size: 0.95rem;
+}
+
+.mode-explanation p:last-child {
+    margin-bottom: 0;
+}
+
+.mode-explanation strong {
+    color: var(--text-primary);
+    font-weight: 700;
+    font-size: 1.05rem;
+    display: inline-block;
+    margin-right: 0.5rem;
+}
+
+.usage-icon {
+    width: 3rem;
+    height: 3rem;
+    background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+    border-radius: 50%;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    box-shadow: 0 4px 16px rgba(124, 58, 237, 0.3);
 }
 
-.use-case ul {
-    list-style: none;
-    padding: 0;
+.usage-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
 }
 
-.use-case li {
+.usage-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
     color: var(--text-secondary);
-    padding: 0.5rem 0;
-    position: relative;
-    padding-left: 1.5rem;
+    line-height: 1.5;
 }
 
-.use-case li::before {
-    content: "→";
-    position: absolute;
-    left: 0;
+.usage-bullet {
     color: var(--accent-purple);
     font-weight: bold;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+}
+
+.usage-item span:last-child {
+    color: var(--text-primary);
 }
 
 /* Mode Content Switching */
@@ -1222,13 +1220,6 @@ body {
     display: block;
 }
 
-.journey-strip {
-    display: none;
-}
-
-.journey-strip.active {
-    display: flex;
-}
 
 /* Responsive adjustments for Quick Start */
 @media (max-width: 768px) {
@@ -1251,22 +1242,14 @@ body {
         padding: 1.25rem 1.5rem;
     }
     
-    .comparison-grid {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-    }
-    
-    .when-to-use {
-        padding: 1.5rem;
-        margin-bottom: 3rem;
-    }
     
     .steps-container {
-        gap: 2rem;
+        gap: 3rem;
     }
     
     .step-card {
         padding: 2rem;
+        margin-bottom: 2rem;
     }
     
     .step-header {
@@ -1284,15 +1267,18 @@ body {
         font-size: 1.5rem;
     }
     
-    .journey-strip {
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        padding: 1rem;
+    .usage-guide {
+        padding: 0.4rem 0.7rem;
+        font-size: 0.85rem;
     }
     
-    .journey-strip span {
-        padding: 0.4rem 0.8rem;
-        font-size: 0.9rem;
+    .flow-arrow {
+        font-size: 1rem;
+    }
+    
+    .flow-arrow.branch-out,
+    .flow-arrow.branch-in {
+        font-size: 1.25rem;
     }
 }
 
@@ -1303,8 +1289,9 @@ body {
         gap: 1rem;
     }
     
-    .journey-strip {
-        font-size: 0.85rem;
+    .flow-step {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.6rem;
     }
 }
 
