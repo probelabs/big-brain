@@ -57,6 +57,8 @@ interface FileContent {
   path: string;
   content: string;
   language: string;
+  lines?: [number, number]; // Optional line range [start, end]
+  nodeType?: string; // Optional node type from Probe (e.g., 'text_search', 'ast_search')
 }
 
 interface PlatformInfo {
@@ -434,28 +436,71 @@ function getLanguageFromExtension(filePath: string): string {
 }
 
 /**
+ * Extracts symbol references from the question text.
+ * Looks for patterns like /path/to/file#symbolName
+ * @param question - The user's question text
+ * @returns Array of {filePath, symbolName} pairs
+ */
+const extractSymbolReferences = (question: string): Array<{filePath: string, symbolName: string}> => {
+  const symbols: Array<{filePath: string, symbolName: string}> = [];
+  
+  // Match patterns like /path/to/file.ext#symbolName
+  const symbolPattern = /([\/\w\-\.]+\.\w+)#(\w+)/g;
+  let match;
+  
+  while ((match = symbolPattern.exec(question)) !== null) {
+    const [, filePath, symbolName] = match;
+    symbols.push({ filePath, symbolName });
+  }
+  
+  return symbols;
+};
+
+/**
  * Generates the formatted output for Big Brain from file contents and user instructions.
  * @param fileContents - Array of file data (path, content, language)
  * @param userInstructions - Instructions or questions to ask the Big Brain
  * @returns A single string containing the final output.
  */
 const generateFormattedOutput = (fileContents: FileContent[], userInstructions: string): string => {
-  // 1) Start the <file_contents> section
-  const fileContentsSection = fileContents
-    .map(({ path: filePath, content, language }) => {
-      // Provide each file with triple backticks and a language hint
-      return `
-File: ${filePath}
-\`\`\`${language}
+  // 1) Start the <code> section with XML structure
+  const codeSection = fileContents
+    .map(({ path: filePath, content, language, lines, nodeType }) => {
+      // Build line attributes if available
+      const lineAttrs = lines ? ` start-line="${lines[0]}" end-line="${lines[1]}"` : '';
+      
+      // Check if path contains a symbol reference (# syntax)
+      if (filePath.includes('#')) {
+        const [actualPath, symbolName] = filePath.split('#');
+        // Always use node_type from Probe if available
+        const typeAttr = nodeType ? ` type="${escapeXml(nodeType)}"` : '';
+        
+        // This is a symbol/fragment reference
+        return `  <symbol path="${escapeXml(actualPath)}" name="${escapeXml(symbolName)}" language="${language}"${typeAttr}${lineAttrs}>
 ${content}
-\`\`\``;
+  </symbol>`;
+      } else {
+        // This is a full file
+        const typeAttr = nodeType ? ` type="${escapeXml(nodeType)}"` : '';
+        return `  <file path="${escapeXml(filePath)}" language="${language}"${typeAttr}${lineAttrs}>
+${content}
+  </file>`;
+      }
     })
     .join('\n\n');
 
   const xmlInstructions = `<xml_formatting_instructions>
+### Understanding the Code Context
+The <code> section above contains extracted code in two formats:
+- **<file>** tags: Complete file contents for full context
+  - Attributes: path (file location), language (code language), type (node type), start-line/end-line (line numbers if partial)
+- **<symbol>** tags: Specific functions, classes, or code fragments that were explicitly referenced
+  - Attributes: path (file location), name (symbol name), type (node type), language, start-line/end-line (line numbers)
+
 ### Role
 - You are a **code analysis and review assistant**: You analyze code and provide detailed explanations with proposed changes in diff format.
 - **IMPORTANT**: Do NOT provide complete file rewrites. Instead, provide targeted diffs and detailed explanations.
+- **Focus on symbols**: When <symbol> tags are present, pay special attention to those specific code fragments
 
 ### Response Format
 Respond with:
@@ -544,7 +589,7 @@ ${userInstructions}
 </user_instructions>`;
 
   // Combine both sections for the final output
-  return '<file_contents>'+fileContentsSection+'</file_contents>' + '\n\n' + xmlInstructions + '\n' + user;
+  return '<code>\n' + codeSection + '\n</code>\n\n' + xmlInstructions + '\n' + user;
 };
 
 /**
@@ -825,17 +870,44 @@ class BigBrainServer {
           }
         }
 
+        // Extract symbol references from the original question
+        const symbolReferences = extractSymbolReferences(validatedArgs.question);
+        
         // Convert probe's JSON output to our FileContent format
         const fileContents: FileContent[] = [];
         
         if (extractResult.results && Array.isArray(extractResult.results)) {
           // Handle probe's actual JSON structure with "results" array
-          for (const result of extractResult.results) {
+          for (let i = 0; i < extractResult.results.length; i++) {
+            const result = extractResult.results[i];
             if (result.code && result.file) {
+              // Try to match this result with a symbol reference
+              // Probe returns results in the order they were found in the question
+              let symbolName: string | undefined;
+              
+              // Look for a matching symbol reference for this file
+              // If multiple symbols from same file, they should appear in order
+              for (const ref of symbolReferences) {
+                if (ref.filePath === result.file) {
+                  // Check if this symbol hasn't been used yet
+                  const alreadyUsed = fileContents.some(fc => 
+                    fc.path === `${ref.filePath}#${ref.symbolName}`
+                  );
+                  if (!alreadyUsed) {
+                    symbolName = ref.symbolName;
+                    break;
+                  }
+                }
+              }
+              
+              const pathWithSymbol = symbolName ? `${result.file}#${symbolName}` : result.file;
+              
               fileContents.push({
-                path: result.file,
+                path: pathWithSymbol,
                 content: result.code,
-                language: getLanguageFromExtension(result.file)
+                language: getLanguageFromExtension(result.file),
+                lines: result.lines || undefined,
+                nodeType: result.node_type || undefined
               });
             }
           }
