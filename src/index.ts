@@ -162,12 +162,9 @@ async function handleOutput(content: string, fileCount: number, originalQuestion
 async function showNotificationAndCopy(content: string, fileCount: number, originalQuestion: string): Promise<void> {
   const { platform } = detectPlatform();
   
-  // Prepare display content with question
-  const displayContent = `QUESTION: ${originalQuestion}\n\nCONTENT (${fileCount} files):\n${content}`;
-  
   try {
-    // Copy to clipboard first
-    await clipboardy.write(displayContent);
+    // Copy to clipboard first (content already includes the question in XML format)
+    await clipboardy.write(content);
     
     // Show platform-specific notification
     switch(platform) {
@@ -254,16 +251,9 @@ function showWindowsDialog(content: string, fileCount: number, originalQuestion:
     ? '/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe'
     : 'powershell';
     
-  // Create display content with original question
-  const displayContent = `=== ORIGINAL QUESTION ===
-${originalQuestion}
-
-=== BIG BRAIN FORMATTED CONTENT (${fileCount} files) ===
-${content}`;
-    
-  // Create temp file to avoid command-line length issues
+  // Create temp file to avoid command-line length issues (content already includes question in XML)
   const tempFile = path.join(os.tmpdir(), `big_brain_${Date.now()}.txt`);
-  fs.writeFileSync(tempFile, displayContent);
+  fs.writeFileSync(tempFile, content);
   
   // Convert WSL path to Windows path if needed
   const windowsPath = fromWSL 
@@ -282,38 +272,11 @@ ${content}`;
     $form.StartPosition = "CenterScreen"
     $form.MaximizeBox = $false
     
-    # Create splitter container
-    $splitter = New-Object System.Windows.Forms.SplitContainer
-    $splitter.Dock = "Fill"
-    $splitter.Orientation = "Horizontal"
-    $splitter.SplitterDistance = 120
-    $splitter.FixedPanel = "Panel1"
-    
-    # Question panel (top, read-only)
-    $questionLabel = New-Object System.Windows.Forms.Label
-    $questionLabel.Text = "Original Question:"
-    $questionLabel.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Bold)
-    $questionLabel.Location = New-Object System.Drawing.Point(5,5)
-    $questionLabel.Size = New-Object System.Drawing.Size(200,20)
-    
-    $questionBox = New-Object System.Windows.Forms.TextBox
-    $questionBox.Text = "${originalQuestion.replace(/"/g, '""')}"
-    $questionBox.Multiline = $true
-    $questionBox.ReadOnly = $true
-    $questionBox.ScrollBars = "Vertical"
-    $questionBox.Font = New-Object System.Drawing.Font("Segoe UI", 9)
-    $questionBox.BackColor = [System.Drawing.Color]::LightGray
-    $questionBox.Location = New-Object System.Drawing.Point(5,25)
-    $questionBox.Size = New-Object System.Drawing.Size(970,85)
-    
-    $splitter.Panel1.Controls.Add($questionLabel)
-    $splitter.Panel1.Controls.Add($questionBox)
-    
-    # Content panel (bottom, editable)
+    # Main content panel
     $contentLabel = New-Object System.Windows.Forms.Label
-    $contentLabel.Text = "Big Brain Formatted Content (Select and copy what you need):"
+    $contentLabel.Text = "Big Brain Formatted Content (question included in XML):"
     $contentLabel.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Bold)
-    $contentLabel.Location = New-Object System.Drawing.Point(5,5)
+    $contentLabel.Location = New-Object System.Drawing.Point(10,10)
     $contentLabel.Size = New-Object System.Drawing.Size(400,20)
     
     $textBox = New-Object System.Windows.Forms.RichTextBox
@@ -321,11 +284,8 @@ ${content}`;
     $textBox.Font = New-Object System.Drawing.Font("Consolas", 9)
     $textBox.ScrollBars = "Both"
     $textBox.ReadOnly = $false
-    $textBox.Location = New-Object System.Drawing.Point(5,25)
-    $textBox.Size = New-Object System.Drawing.Size(970,410)
-    
-    $splitter.Panel2.Controls.Add($contentLabel)
-    $splitter.Panel2.Controls.Add($textBox)
+    $textBox.Location = New-Object System.Drawing.Point(10,35)
+    $textBox.Size = New-Object System.Drawing.Size(970,480)
     
     # Button panel
     $buttonPanel = New-Object System.Windows.Forms.Panel
@@ -357,7 +317,8 @@ ${content}`;
     $buttonPanel.Controls.Add($copyAllButton)
     $buttonPanel.Controls.Add($copySelectedButton)
     
-    $form.Controls.Add($splitter)
+    $form.Controls.Add($contentLabel)
+    $form.Controls.Add($textBox)
     $form.Controls.Add($buttonPanel)
     $form.ShowDialog()
   `;
@@ -373,18 +334,13 @@ ${content}`;
  * Shows a Linux dialog using zenity, kdialog, or fallback.
  */
 function showLinuxDialog(content: string, fileCount: number, originalQuestion: string): void {
-  // Create display content with original question
-  const displayContent = `=== ORIGINAL QUESTION ===
-${originalQuestion}
-
-=== BIG BRAIN FORMATTED CONTENT (${fileCount} files) ===
-${content}`;
-
+  // Content already includes question in XML format
+  
   // Try zenity first
   exec('which zenity', (error) => {
     if (!error) {
       const tempFile = path.join(os.tmpdir(), `big_brain_${Date.now()}.txt`);
-      fs.writeFileSync(tempFile, displayContent);
+      fs.writeFileSync(tempFile, content);
       exec(`zenity --text-info --filename="${tempFile}" --title="Big Brain: ${fileCount} files" --width=1000 --height=600 --editable`, (error) => {
         if (error) {
           console.error('zenity dialog failed:', error);
@@ -395,7 +351,7 @@ ${content}`;
       exec('which kdialog', (error2) => {
         if (!error2) {
           const tempFile = path.join(os.tmpdir(), `big_brain_${Date.now()}.txt`);
-          fs.writeFileSync(tempFile, displayContent);
+          fs.writeFileSync(tempFile, content);
           exec(`kdialog --textbox "${tempFile}" 1000 600`, (error) => {
             if (error) {
               console.error('kdialog dialog failed:', error);
@@ -404,7 +360,7 @@ ${content}`;
         } else {
           console.error('No dialog tool found. Install zenity or kdialog for dialog support.');
           // Fallback to clipboard
-          clipboardy.write(displayContent).catch(console.error);
+          clipboardy.write(content).catch(console.error);
         }
       });
     }
