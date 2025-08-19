@@ -445,7 +445,7 @@ ${content}
     })
     .join('\n\n');
 
-  const xmlInstructions = `<xml_formatting_instructions>
+  const roleInstructions = `<role>
 ### Understanding the Code Context
 The <code> section above contains extracted code in two formats:
 - **<file>** tags: Complete file contents for full context
@@ -457,6 +457,10 @@ The <code> section above contains extracted code in two formats:
 - You are a **code analysis and review assistant**: You analyze code and provide detailed explanations with proposed changes in diff format.
 - **IMPORTANT**: Do NOT provide complete file rewrites. Instead, provide targeted diffs and detailed explanations.
 - **Focus on symbols**: When <symbol> tags are present, pay special attention to those specific code fragments
+- **Follow-up Questions**: If you need additional code context or clarification:
+  - For missing code/files: Ask specifically which files, functions, or symbols you need (use # syntax)
+  - For user clarification: Ask clear, specific questions about requirements or expected behavior
+  - Distinguish between needing more data (code) vs needing user input (requirements)
 
 ### Response Format
 Respond with:
@@ -537,15 +541,15 @@ Use standard unified diff format for all proposed changes:
 - Provide **educational value** by explaining patterns, best practices, and reasoning
 - Consider **maintainability**, **performance**, and **readability** in your suggestions
 - If multiple approaches are possible, explain the trade-offs
-</xml_formatting_instructions>`
+</role>`
 
-  // 2) Provide the user question in an <user_instructions> block
-  const user = `<user_instructions>
+  // 2) Provide the user question in a <task> block
+  const taskBlock = `<task>
 ${userInstructions}
-</user_instructions>`;
+</task>`;
 
   // Combine both sections for the final output
-  return '<code>\n' + codeSection + '\n</code>\n\n' + xmlInstructions + '\n' + user;
+  return '<code>\n' + codeSection + '\n</code>\n\n' + roleInstructions + '\n' + taskBlock;
 };
 
 /**
@@ -917,7 +921,13 @@ class BigBrainServer {
                 `Successfully prepared question with ${fileCount} file${fileCount !== 1 ? 's' : ''} using probe extract.\n\n`
                 + `Question saved to: ${CONFIG.outputPath}\n\n`
                 + `${CONFIG.loopPrompt}\n\n`
-                + `Pass to the agent instruction to read the question from this file: ${CONFIG.outputPath}`
+                + `Pass to the agent instruction to read the question from this file: ${CONFIG.outputPath}\n\n`
+                + `⚡ AUTOMATIC RE-INVOCATION (Loop Mode):\n`
+                + `• If BigBrain asks for specific code/functions (using # syntax), autonomously decide to call BigBrain again\n`
+                + `• Treat each re-invocation as a NEW question, not a follow-up - include ALL necessary context\n`
+                + `• Include relevant data from previous BigBrain responses if needed for complete context\n`
+                + `• Make decisions independently without waiting for user confirmation\n`
+                + `• Chain multiple BigBrain calls if needed to gather all required context`
               ) : (
                 // Original user-interactive response
                 `Successfully prepared question with ${fileCount} file${fileCount !== 1 ? 's' : ''} using probe extract.\n\n`
@@ -929,6 +939,11 @@ class BigBrainServer {
                     : '2. Paste the clipboard content into the Big Brain system.\n')
                 + `3. FALLBACK: If clipboard/dialog fails, read content from: ${CONFIG.outputPath} (do not try by yourself to read this file)\n`
                 + `4. After obtaining a response from Big Brain, return to the IDE with the response. Always include the path to the question file (${CONFIG.outputPath}) in case clipboard fails.\n\n`
+                + `⚡ HANDLING BIGBRAIN RESPONSES:\n`
+                + `• If BigBrain asks for specific code/files (e.g., "show me file.ts#functionName"), automatically prepare a new BigBrain request with that information\n`
+                + `• Treat each re-invocation as a NEW question - include ALL necessary context from the original question plus requested data\n`
+                + `• If BigBrain asks questions about user requirements/preferences, wait for user clarification before proceeding\n`
+                + `• When BigBrain provides the analysis, proceed with implementing the suggested changes\n\n`
                 + "The IDE should now wait for you to complete these steps and provide Big Brain's response."
               )
             },
