@@ -45,7 +45,7 @@ export class ChatGPTBridge {
   constructor(options: ChatGPTBridgeOptions = {}) {
     this.checkInterval = options.checkInterval || 5000;  // Check every 5 seconds (less aggressive)
     this.stableChecks = options.stableChecks || 2;  // Only need 2 stable reads
-    this.maxWaitTime = options.maxWaitTime || 300000;  // 5 minutes default timeout
+    this.maxWaitTime = options.maxWaitTime || 1200000;  // 20 minutes default timeout (for ChatGPT Pro thinking)
     this.debug = options.debug || false;
   }
 

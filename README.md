@@ -93,7 +93,7 @@ claude mcp add -- npx -y @probelabs/big-brain@latest --chatgpt
 **Workflow:**
 1. Your AI agent calls BigBrain when it needs help
 2. BigBrain automatically opens ChatGPT Desktop app
-3. Sends the query and waits for response (30-60 seconds, or longer for thinking models)
+3. Sends the query and waits for response (30 seconds to 20 minutes for ChatGPT Pro thinking)
 4. Returns ChatGPT's response back to your agent
 5. Fully automated - no manual intervention required
 

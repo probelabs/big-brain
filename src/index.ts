@@ -952,7 +952,7 @@ class BigBrainServer {
               debug: false,
               checkInterval: 10000,  // Check every 10 seconds (very conservative)
               stableChecks: 2,
-              maxWaitTime: 300000  // 5 minutes timeout
+              maxWaitTime: 1200000  // 20 minutes timeout (ChatGPT Pro can take this long)
             });
             
             console.log('🤖 Querying ChatGPT Desktop with formatted question...');
