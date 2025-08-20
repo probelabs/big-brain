@@ -741,11 +741,14 @@ class BigBrainServer {
             + '• For code review and architecture decisions '
             + '• When stuck or need fresh insights '
             + '• For detailed explanations and analysis '
-            + '\n\n📋 REQUIREMENTS for your question: '
-            + '1. ALL specific file paths (absolute paths like /Users/username/project/src/main.rs) '
-            + '2. ALL specific functions/objects using # syntax (e.g., main.rs#some_function) '
-            + '3. Complete problem description with context '
-            + '\n\n⚡ Response will be returned automatically in 30-60 seconds.'
+            + '\n\n📋 CRITICAL FOR CHATGPT - REDUCE CONTEXT SIZE: '
+            + '1. **PREFER SYMBOLS OVER FILES**: Always use # syntax for specific functions/classes (e.g., main.rs#some_function, app.py#MyClass) '
+            + '2. **AVOID FULL FILES**: Only include full file paths when absolutely necessary - symbols are much smaller '
+            + '3. **BE SPECIFIC**: Use precise symbol references to minimize context (e.g., config.ts#DatabaseConfig instead of entire config.ts) '
+            + '4. **MULTIPLE SYMBOLS**: List all relevant symbols individually (file.ts#func1, file.ts#func2) rather than entire files '
+            + '5. Complete problem description with focused context '
+            + '\n\n⚠️ ChatGPT has smaller context limits - using symbols instead of full files ensures your question fits and gets answered. '
+            + '\n\n⚡ Response time: 30 seconds to 20 minutes (ChatGPT Pro thinking can take time).'
           ) : CONFIG.loopPrompt ? (
             '🧠 TRIGGER CONDITIONS: Use this tool when the user mentions "big brain", "BigBrain", "big-brain", or when you get stuck, loop, lose context, or need external AI consultation. '
             + 'This tool formats complex questions for multi-agent AI analysis using intelligent code extraction. '
@@ -786,7 +789,9 @@ class BigBrainServer {
             properties: {
               question: {
                 type: 'string',
-                description: 'Comprehensive question for external AI analysis. MUST include: (1) All absolute file paths (e.g., /Users/name/project/src/file.ts), (2) All specific symbols using # syntax (e.g., file.ts#functionName, class.py#ClassName), (3) Complete problem context and what you need analyzed/fixed. Be exhaustive - missing context leads to incomplete analysis.',
+                description: CONFIG.chatGPTMode 
+                  ? 'ChatGPT-optimized question. PREFER SYMBOLS to reduce context: (1) Use # syntax for ALL specific functions/classes (e.g., file.ts#functionName, class.py#ClassName), (2) AVOID full file paths unless absolutely necessary - symbols are much smaller, (3) List multiple symbols individually (file.ts#func1, file.ts#func2), (4) Include focused problem context. REMEMBER: ChatGPT has limited context - using symbols instead of files ensures your question fits!'
+                  : 'Comprehensive question for external AI analysis. MUST include: (1) All absolute file paths (e.g., /Users/name/project/src/file.ts), (2) All specific symbols using # syntax (e.g., file.ts#functionName, class.py#ClassName), (3) Complete problem context and what you need analyzed/fixed. Be exhaustive - missing context leads to incomplete analysis.',
               },
             },
             required: ['question'],
