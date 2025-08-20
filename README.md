@@ -4,17 +4,19 @@ When your AI needs a bigger brain.
 
 ## Overview
 
-BigBrain is an MCP server that gives your AI an elegant exit when it gets stuck, loops, or loses context. It intelligently extracts relevant code and context, packages it cleanly, and operates in two modes:
+BigBrain is an MCP server that gives your AI an elegant exit when it gets stuck, loops, or loses context. It intelligently extracts relevant code and context, packages it cleanly, and operates in three modes:
 
 - **External AI Mode**: Get fresh insights from external AI models like ChatGPT 5 Pro, Grok Heavy, or Claude Opus - then return with the solution to your original chat
 - **Multi-Agent Mode**: Enable seamless AI-to-AI communication within systems like Claude Code for direct agent collaboration
+- **ChatGPT Desktop Mode** (Experimental): Fully automated Agent-to-Agent communication with ChatGPT Desktop app (macOS only)
 
 ## Features
 
 - **Intelligent Context Extraction**: Uses Probe to automatically discover and extract relevant code, dependencies, and context
-- **Dual Operation Modes**: 
+- **Three Operation Modes**: 
   - **External AI Mode**: Round-trip workflow with clipboard integration for user-driven external consultation
   - **Multi-Agent Mode**: Direct AI-to-AI communication for automated agent collaboration
+  - **ChatGPT Desktop Mode**: Native integration with ChatGPT Desktop for Agent-to-Agent workflows (macOS)
 - **Clean Context Packaging**: Formats everything into minimal, structured prompt packs
 - **Multi-Model Support**: Works with any AI but optimized for advanced models like ChatGPT 5 Pro, Grok Heavy, and Claude Opus
 - **File-Based Communication**: Reliable agent-to-agent transfer in multi-agent systems
@@ -42,7 +44,7 @@ Add to your MCP configuration file:
 
 ## Usage Modes
 
-BigBrain operates in two distinct modes depending on your workflow needs:
+BigBrain operates in three distinct modes depending on your workflow needs:
 
 ### External AI Mode (Default)
 
@@ -74,6 +76,29 @@ npx @probelabs/big-brain --loop "Now call research-agent to investigate this iss
 3. Returns instructions for the next agent to read the file
 4. Seamless automated agent collaboration
 
+### ChatGPT Desktop Mode (Experimental)
+
+For **fully automated Agent-to-Agent communication** with ChatGPT Desktop:
+
+```bash
+# Enable ChatGPT Desktop integration
+claude mcp add -- npx -y @probelabs/big-brain@latest --chatgpt
+```
+
+**Requirements:**
+- macOS 11.0 or later
+- [ChatGPT Desktop app](https://chatgpt.com/desktop) installed
+- Terminal accessibility permissions enabled (System Settings → Privacy & Security → Accessibility)
+
+**Workflow:**
+1. Your AI agent calls BigBrain when it needs help
+2. BigBrain automatically opens ChatGPT Desktop app
+3. Sends the query and waits for response (30-60 seconds, or longer for thinking models)
+4. Returns ChatGPT's response back to your agent
+5. Fully automated - no manual intervention required
+
+**Optimized for ChatGPT 5 Pro:** This mode is specifically designed to leverage ChatGPT 5 Pro's advanced thinking capabilities for complex reasoning tasks.
+
 ## When to Use Each Mode
 
 | Scenario | Mode | Why |
@@ -82,6 +107,8 @@ npx @probelabs/big-brain --loop "Now call research-agent to investigate this iss
 | Need specialized expertise | **External AI** | Leverage specific model strengths (GPT-5 Pro, Grok Heavy, etc.) |
 | Multi-agent workflows | **Multi-Agent** | Automated collaboration between AI agents |
 | Claude Code environments | **Multi-Agent** | Direct agent-to-agent handoffs |
+| Need ChatGPT 5 Pro thinking | **ChatGPT Desktop** | Automated access to ChatGPT's advanced reasoning |
+| macOS with ChatGPT Desktop | **ChatGPT Desktop** | Native integration for seamless Agent-to-Agent flow |
 | Manual consultation | **External AI** | Human-in-the-loop decision making |
 | Automated pipelines | **Multi-Agent** | No human intervention required |
 
@@ -137,6 +164,7 @@ BigBrain supports several command-line flags to customize behavior:
 ```
 
 **Flag Reference:**
+- `--chatgpt`: Enable ChatGPT Desktop mode (macOS only, experimental)
 - `--loop "custom prompt"`: Enable multi-agent mode with custom agent instruction
 - `--disable-sound`: Disable sound notifications
 - `--disable-notification`: Disable desktop notifications
@@ -161,6 +189,25 @@ For systems like Claude Code that need automated agent communication:
 }
 ```
 
+### ChatGPT Desktop Configuration Example
+
+For macOS users with ChatGPT Desktop app installed:
+
+```json
+{
+  "mcpServers": {
+    "big-brain": {
+      "command": "npx",
+      "args": [
+        "-y", "@probelabs/big-brain@latest",
+        "--chatgpt",
+        "--disable-sound"
+      ]
+    }
+  }
+}
+```
+
 ## How BigBrain Works
 
 ### External AI Mode Process
@@ -179,7 +226,16 @@ For systems like Claude Code that need automated agent communication:
 4. **Agent Instruction**: BigBrain responds with the custom prompt and file path for the next agent
 5. **Direct Handoff**: The designated agent reads the file and continues processing without human intervention
 
-### Why Both Modes Work
+### ChatGPT Desktop Mode Process
+
+1. **Agent Request**: Your AI agent calls BigBrain when it encounters a complex problem
+2. **Intelligent Extraction**: BigBrain uses Probe to extract relevant code and context
+3. **Automated UI Control**: BigBrain opens ChatGPT Desktop app via macOS accessibility APIs
+4. **Query Submission**: Automatically types or pastes the query into ChatGPT
+5. **Response Capture**: Waits for and captures ChatGPT's response (optimized for thinking models)
+6. **Agent Return**: Returns the response directly to your AI agent
+
+### Why All Modes Work
 
 **External AI Mode Benefits:**
 - **Breaks Context Loops**: Fresh AI session without chat history noise
@@ -192,6 +248,12 @@ For systems like Claude Code that need automated agent communication:
 - **Reliable Transfer**: File-based communication eliminates clipboard dependencies
 - **Agent Coordination**: Custom prompts guide specific agent actions
 - **Seamless Integration**: Built for systems like Claude Code with multiple AI agents
+
+**ChatGPT Desktop Mode Benefits:**
+- **Native Integration**: Direct control of ChatGPT Desktop app
+- **Thinking Models**: Optimized for ChatGPT 5 Pro's advanced reasoning
+- **Fully Automated**: Agent-to-Agent without human intervention
+- **macOS Native**: Leverages system accessibility for seamless control
 
 **Shared Benefits:**
 - **Intelligent Context**: Probe ensures all relevant code is included automatically
