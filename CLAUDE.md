@@ -1,5 +1,49 @@
 # BigBrain Project Documentation
 
+## Testing BigBrain
+
+### Testing ChatGPT Mode
+
+The ChatGPT mode allows BigBrain to automatically query ChatGPT Desktop and return responses without manual intervention.
+
+#### Prerequisites
+- ChatGPT Desktop app must be installed (https://chatgpt.com/desktop)
+- macOS accessibility permissions must be granted to Terminal
+
+#### Running Tests
+
+1. **Test ChatGPT Mode Directly**
+```bash
+node test_chatgpt_mode.js
+```
+This will:
+- Start BigBrain with --chatgpt flag
+- Send a test question via MCP protocol
+- Automatically query ChatGPT Desktop
+- Return the response (takes 30-60 seconds)
+
+2. **Test Manual Mode (Default)**
+```bash
+node test_mcp_direct.js
+```
+
+3. **Test with MCP Inspector**
+```bash
+npm run inspector -- --chatgpt
+```
+Then use the web UI to call the ask_big_brain tool.
+
+### Available Command-Line Flags
+- `--chatgpt` - Enable automatic ChatGPT Desktop integration
+- `--loop <prompt>` - Enable loop mode for multi-agent systems
+- `--disable-sound` - Disable sound notifications
+- `--disable-notification` - Disable dialog notifications
+
+### Testing Workflow
+1. Build the project: `npm run build`
+2. Copy UI reader to build: `cp chatgpt_ui_reader_ultrafast.js build/`
+3. Run test: `node test_chatgpt_mode.js`
+
 ## Deployment
 
 ### Cloudflare Pages Deployment

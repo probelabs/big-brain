@@ -36,12 +36,13 @@
     "@buger/probe": "latest",
     "@modelcontextprotocol/sdk": "^0.6.0",
     "clipboardy": "^4.0.0",
-    "fs-extra": "^11.3.0"
+    "fs-extra": "^11.3.0",
+    "run-applescript": "^7.0.0"
   },
   "devDependencies": {
-    "@types/node": "^20.11.24",
     "@types/clipboardy": "^1.1.0",
     "@types/fs-extra": "^11.0.4",
+    "@types/node": "^20.11.24",
     "typescript": "^5.3.3"
   }
 }

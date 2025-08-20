@@ -13,6 +13,7 @@ import os from 'os';
 import fs from 'fs-extra';
 import clipboardy from 'clipboardy';
 import { exec } from 'child_process';
+import { ChatGPTBridge, isChatGPTInstalled, ensureReaderScripts } from './chatgpt-bridge.js';
 // @ts-ignore - @buger/probe doesn't have TypeScript declarations (using latest version)
 import { extract } from '@buger/probe';
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
@@ -35,6 +36,9 @@ if (loopIndex !== -1 && args[loopIndex + 1]) {
   loopPrompt = args[loopIndex + 1];
 }
 
+// Check for --chatgpt mode
+const chatGPTMode = args.includes('--chatgpt');
+
 // Configuration
 const CONFIG = {
   outputPath: path.join(os.tmpdir(), 'big_brain_output.txt'),
@@ -43,7 +47,8 @@ const CONFIG = {
   // Parse command-line flags - enabled by default, disable with flags
   enableSound: !args.includes('--disable-sound'),
   enableNotify: !args.includes('--disable-notification'),
-  loopPrompt: loopPrompt  // null if not in loop mode, string if enabled
+  loopPrompt: loopPrompt,  // null if not in loop mode, string if enabled
+  chatGPTMode: chatGPTMode  // true if --chatgpt flag is present
 };
 
 interface BigBrainArgs {
@@ -92,7 +97,7 @@ function detectPlatform(): PlatformInfo {
  * Plays a system sound notification if enabled and not in loop mode.
  */
 function playSystemSound(): void {
-  if (!CONFIG.enableSound || CONFIG.loopPrompt) return;
+  if (!CONFIG.enableSound || CONFIG.loopPrompt || CONFIG.chatGPTMode) return;
   
   const { platform, isWSL } = detectPlatform();
   
@@ -135,8 +140,8 @@ function playSystemSound(): void {
  * @param originalQuestion - The user's original question
  */
 async function handleOutput(content: string, fileCount: number, originalQuestion: string): Promise<void> {
-  // In loop mode, only write to file - no clipboard or notifications
-  if (CONFIG.loopPrompt) {
+  // In loop mode or ChatGPT mode, only write to file - no clipboard or notifications
+  if (CONFIG.loopPrompt || CONFIG.chatGPTMode) {
     // File is already written in the main handler
     return;
   }
@@ -696,7 +701,26 @@ class BigBrainServer {
       tools: [
         {
           name: 'ask_big_brain',
-          description: CONFIG.loopPrompt ? (
+          description: CONFIG.chatGPTMode ? (
+            '🧠 CHATGPT MODE ACTIVE: This tool will automatically query ChatGPT Desktop and return the response. '
+            + 'No manual interaction required - the system handles everything automatically. '
+            + '\n\n🤖 AUTOMATIC FLOW: '
+            + '1. Formats your question with code context using Probe '
+            + '2. Opens ChatGPT Desktop and creates new chat '
+            + '3. Pastes the formatted question '
+            + '4. Waits for and captures the complete response '
+            + '5. Returns ChatGPT\'s response directly to you '
+            + '\n\n🎯 WHEN TO USE: '
+            + '• When you need external AI perspective on complex problems '
+            + '• For code review and architecture decisions '
+            + '• When stuck or need fresh insights '
+            + '• For detailed explanations and analysis '
+            + '\n\n📋 REQUIREMENTS for your question: '
+            + '1. ALL specific file paths (absolute paths like /Users/username/project/src/main.rs) '
+            + '2. ALL specific functions/objects using # syntax (e.g., main.rs#some_function) '
+            + '3. Complete problem description with context '
+            + '\n\n⚡ Response will be returned automatically in 30-60 seconds.'
+          ) : CONFIG.loopPrompt ? (
             '🧠 TRIGGER CONDITIONS: Use this tool when the user mentions "big brain", "BigBrain", "big-brain", or when you get stuck, loop, lose context, or need external AI consultation. '
             + 'This tool formats complex questions for multi-agent AI analysis using intelligent code extraction. '
             + '\n\n🤖 MULTI-AGENT MODE: This tool operates in loop mode for direct AI-to-AI communication. Results are saved to a file for agent processing. '
@@ -907,6 +931,86 @@ class BigBrainServer {
         await fs.writeFile(CONFIG.outputPath, formattedContent, 'utf8');
 
         const fileCount = fileContents.length;
+        
+        // ChatGPT Mode: Automatically query ChatGPT and return response
+        if (CONFIG.chatGPTMode) {
+          try {
+            // Check if ChatGPT is installed
+            if (!await isChatGPTInstalled()) {
+              throw new McpError(
+                ErrorCode.InvalidParams,
+                'ChatGPT Desktop app is not installed. Please install it from https://chatgpt.com/desktop'
+              );
+            }
+            
+            // Ensure reader scripts are available
+            await ensureReaderScripts();
+            
+            // Create ChatGPT bridge instance
+            // Note: ChatGPT Pro can take up to 20 minutes to respond
+            const chatGPTBridge = new ChatGPTBridge({
+              debug: false,
+              checkInterval: 10000,  // Check every 10 seconds (very conservative)
+              stableChecks: 2,
+              maxWaitTime: 300000  // 5 minutes timeout
+            });
+            
+            console.log('🤖 Querying ChatGPT Desktop with formatted question...');
+            
+            // Query ChatGPT with the formatted content
+            const chatGPTResult = await chatGPTBridge.query(formattedContent, true);
+            
+            if (chatGPTResult.success && chatGPTResult.response) {
+              console.log(`✅ ChatGPT responded in ${chatGPTResult.elapsed}s`);
+              
+              const metricsText = chatGPTResult.metrics 
+                ? `📊 Performance: ${chatGPTResult.metrics.uiReads} UI reads, ${Math.round(chatGPTResult.metrics.totalReadTime / chatGPTResult.metrics.uiReads)}ms avg read time\n\n`
+                : '';
+              
+              return {
+                content: [
+                  {
+                    type: 'text',
+                    text: `🧠 ChatGPT Analysis Complete (${chatGPTResult.elapsed}s)\n\n`
+                      + metricsText
+                      + `═══════════════════════════════════════\n\n`
+                      + chatGPTResult.response
+                      + `\n\n═══════════════════════════════════════\n\n`
+                      + `💡 This response was automatically retrieved from ChatGPT Desktop.\n`
+                      + `📁 Original formatted question saved to: ${CONFIG.outputPath}`
+                  }
+                ]
+              };
+            } else {
+              throw new McpError(
+                ErrorCode.InternalError,
+                `ChatGPT query failed: ${chatGPTResult.error || 'No response received'}`
+              );
+            }
+          } catch (error: any) {
+            // Fallback to manual mode if ChatGPT automation fails
+            console.error('ChatGPT automation failed:', error.message);
+            console.log('Falling back to manual mode...');
+            
+            // Handle output normally
+            await handleOutput(formattedContent, fileCount, validatedArgs.question);
+            
+            return {
+              content: [
+                {
+                  type: 'text',
+                  text: `⚠️ ChatGPT automation failed: ${error.message}\n\n`
+                    + `Falling back to manual mode. The formatted content has been prepared.\n\n`
+                    + `Please manually:\n`
+                    + `1. Copy the content from clipboard\n`
+                    + `2. Paste it into ChatGPT\n`
+                    + `3. Return with the response\n\n`
+                    + `Question saved to: ${CONFIG.outputPath}`
+                }
+              ]
+            };
+          }
+        }
         
         // Handle output based on configuration (dialog or clipboard) and play sound if enabled
         await handleOutput(formattedContent, fileCount, validatedArgs.question);

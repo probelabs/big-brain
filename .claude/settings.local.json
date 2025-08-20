@@ -40,7 +40,16 @@
       "Bash(wrangler:*)",
       "Bash(git remote set-url:*)",
       "Bash(npm deprecate:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(osascript:*)",
+      "Bash(./check_permissions.sh:*)",
+      "Bash(./terminal_runner.sh:*)",
+      "Bash(./silent_terminal_runner.sh:*)",
+      "Bash(defaults read:*)",
+      "Bash(./perfect_terminal_runner.sh:*)",
+      "Bash(./simple_runner.sh:*)",
+      "Bash(./terminal_exec_runner.sh read_current_chat.js)",
+      "Bash(cp:*)"
     ],
     "deny": [],
     "ask": [],
