@@ -70,6 +70,13 @@
                             <p>Automated AI-to-AI communication</p>
                         </div>
                     </button>
+                    <button class="mode-btn" onclick="switchMode('chatgpt', this)">
+                        <div class="mode-icon">🚀</div>
+                        <div class="mode-info">
+                            <h3>ChatGPT Desktop Agent</h3>
+                            <p>Agent-to-Agent with ChatGPT Desktop (Experimental, macOS)</p>
+                        </div>
+                    </button>
                 </div>
             </div>
 
@@ -288,6 +295,124 @@ Whenever you get stuck and can't find a solution - just ask BigBrain MCP for adv
                     <p class="step-description">The designated agent reads the context file and continues processing automatically. No human intervention required.</p>
                     <div class="pro-tip">
                         <strong>🤖 Perfect for:</strong> Claude Code environments with multiple AI agents working together seamlessly.
+                    </div>
+                </div>
+            </div>
+
+            <!-- ChatGPT Desktop Mode Steps -->
+            <div id="chatgpt-mode-steps" class="steps-container mode-content">
+                <!-- What is ChatGPT Desktop Mode -->
+                <div class="step-card usage-guide">
+                    <div class="step-header">
+                        <div class="usage-icon">🚀</div>
+                        <h3>Native ChatGPT Desktop Mode <span class="experimental-badge">Experimental</span></h3>
+                    </div>
+                    <div class="mode-explanation">
+                        <p><strong>What it is:</strong> Agent-to-Agent communication using ChatGPT Desktop app for fully automated AI collaboration, leveraging the full power of the world's best model.</p>
+                        <p><strong>How it works:</strong> Configure with --chatgpt flag → Your AI agent calls BigBrain → Automatically opens ChatGPT Desktop → Gets response → Returns to your agent.</p>
+                        <p class="warning-note"><strong>⚠️ macOS only:</strong> Requires ChatGPT Desktop app and accessibility permissions for Terminal.</p>
+                    </div>
+                    <div class="usage-list">
+                        <div class="usage-item">
+                            <span class="usage-bullet">✓</span>
+                            <span><strong>Best for:</strong> Complex reasoning tasks requiring ChatGPT 5 Pro's thinking capabilities</span>
+                        </div>
+                        <div class="usage-item">
+                            <span class="usage-bullet">✓</span>
+                            <span><strong>Agent-to-Agent:</strong> Fully automated communication between your AI and ChatGPT</span>
+                        </div>
+                        <div class="usage-item">
+                            <span class="usage-bullet">✓</span>
+                            <span><strong>Thinking Models:</strong> Optimized for ChatGPT 5 Pro's advanced thinking capabilities</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">1</div>
+                        <h3>Setup Requirements</h3>
+                    </div>
+                    <p class="step-description">Install ChatGPT Desktop and grant Terminal accessibility permissions on macOS.</p>
+                    <div class="instruction-box">
+                        <p><strong>Prerequisites:</strong></p>
+                        <ul style="list-style: none; padding: 0;">
+                            <li>✅ ChatGPT Desktop app: <a href="https://chatgpt.com/desktop" target="_blank">Download here</a></li>
+                            <li>✅ macOS 11.0 or later</li>
+                            <li>✅ Terminal accessibility permissions enabled</li>
+                        </ul>
+                    </div>
+                    <div class="pro-tip">
+                        <strong>🔧 Setup Tip:</strong> Grant Terminal permissions in System Settings → Privacy & Security → Accessibility → Terminal
+                    </div>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">2</div>
+                        <h3>Configure ChatGPT Mode</h3>
+                    </div>
+                    <p class="step-description">Set up BigBrain with the --chatgpt flag for automatic ChatGPT Desktop integration.</p>
+                    <div class="install-tabs">
+                        <button class="tab-btn active" onclick="switchTab('gpt-claude', this)">Claude Code</button>
+                        <button class="tab-btn" onclick="switchTab('gpt-cursor', this)">Cursor & Others</button>
+                    </div>
+                    <div class="tab-content active" id="tab-gpt-claude">
+                        <div class="command-box">
+                            <pre><code id="gpt-claude-cmd">claude mcp add -- npx -y @probelabs/big-brain@latest --chatgpt</code></pre>
+                            <button class="copy-btn" onclick="copyFrom('gpt-claude-cmd', this)">
+                                <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="tab-content" id="tab-gpt-cursor">
+                        <div class="command-box">
+                            <pre><code id="gpt-cursor-cmd">{
+  "mcpServers": {
+    "big-brain": {
+      "command": "npx",
+      "args": [
+        "-y", 
+        "@probelabs/big-brain@latest",
+        "--chatgpt"
+      ]
+    }
+  }
+}</code></pre>
+                            <button class="copy-btn" onclick="copyFrom('gpt-cursor-cmd', this)">
+                                <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">3</div>
+                        <h3>Automatic AI Consultation</h3>
+                    </div>
+                    <p class="step-description">Your AI agent automatically opens ChatGPT Desktop, sends the query, and waits for the response. Everything happens seamlessly in the background.</p>
+                    <div class="instruction-box">
+                        <p><strong>Agent-to-Agent Flow:</strong></p>
+                        <p>Your Agent → BigBrain → ChatGPT Desktop Agent → Response → Back to Your Agent</p>
+                        <p style="margin-top: 10px; color: var(--text-secondary);">Response time: 30-60 seconds (or longer for ChatGPT Pro reasoning)</p>
+                    </div>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">4</div>
+                        <h3>Seamless Integration</h3>
+                    </div>
+                    <p class="step-description">ChatGPT's response is automatically returned to your AI agent. The entire process is hands-free and fully automated.</p>
+                    <div class="pro-tip">
+                        <strong>🚀 Experimental Feature:</strong> This mode is actively being improved. Report issues on <a href="https://github.com/probelabs/big-brain/issues" target="_blank">GitHub</a>.
                     </div>
                 </div>
             </div>

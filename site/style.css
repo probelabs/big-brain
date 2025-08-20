@@ -1096,10 +1096,14 @@ body {
 }
 
 .mode-tabs {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 1.5rem;
     justify-content: center;
     margin-bottom: 3rem;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .mode-btn {
@@ -1140,12 +1144,47 @@ body {
     font-size: 1.25rem;
     font-weight: 600;
     margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
 }
 
 .mode-info p {
     color: var(--text-secondary);
     font-size: 0.9rem;
     line-height: 1.4;
+}
+
+/* Experimental Badge */
+.experimental-badge {
+    background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
+    color: var(--text-primary);
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-block;
+}
+
+/* macOS Badge */
+.macos-badge {
+    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+    color: var(--text-primary);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-left: 0.5rem;
+}
+
+/* Warning Note */
+.warning-note {
+    color: var(--accent-pink);
+    font-weight: 500;
+    margin-top: 0.5rem;
 }
 
 
@@ -1245,8 +1284,7 @@ body {
     }
     
     .mode-tabs {
-        flex-direction: column;
-        align-items: center;
+        grid-template-columns: 1fr;
         gap: 1rem;
     }
     
