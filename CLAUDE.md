@@ -14,7 +14,7 @@ The ChatGPT mode allows BigBrain to automatically query ChatGPT Desktop and retu
 
 1. **Test ChatGPT Mode Directly**
 ```bash
-node test_chatgpt_mode.js
+node scripts/tests/test_chatgpt_mode.js
 ```
 This will:
 - Start BigBrain with --chatgpt flag
@@ -24,7 +24,7 @@ This will:
 
 2. **Test Manual Mode (Default)**
 ```bash
-node test_mcp_direct.js
+node scripts/tests/test_mcp_direct.js
 ```
 
 3. **Test with MCP Inspector**
@@ -41,8 +41,8 @@ Then use the web UI to call the ask_big_brain tool.
 
 ### Testing Workflow
 1. Build the project: `npm run build`
-2. Copy UI reader to build: `cp chatgpt_ui_reader_ultrafast.js build/`
-3. Run test: `node test_chatgpt_mode.js`
+2. Copy UI reader to build: `cp scripts/chatgpt/chatgpt_ui_reader_ultrafast.js build/`
+3. Run test: `node scripts/tests/test_chatgpt_mode.js`
 
 ## Deployment
 
@@ -95,6 +95,9 @@ The site also auto-deploys to GitHub Pages on push to main branch:
 - `worker.js` - Cloudflare Worker for probeai.dev routing
 - `wrangler.toml` - Cloudflare configuration
 - `src/` - MCP server source code
+- `scripts/` - Test scripts and utilities
+  - `tests/` - All test files
+  - `chatgpt/` - ChatGPT Desktop automation scripts
 - `package.json` - Node.js dependencies and scripts
 
 ## BigBrain Integration
