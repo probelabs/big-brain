@@ -2,7 +2,7 @@
   "name": "@probelabs/big-brain",
   "version": "0.10.2",
   "main": "build/index.js",
-  "description": "MCP server for formatting complex code questions with file context",
+  "description": "BigBrain MCP Server - When your AI needs a bigger brain. Intelligent context extraction for getting fresh AI insights when stuck.",
   "type": "module",
   "author": "buger",
   "license": "MIT",
@@ -14,8 +14,17 @@
     "mcp",
     "model-context-protocol",
     "ai",
+    "artificial-intelligence",
     "code-assistant",
-    "development-tools"
+    "development-tools",
+    "claude",
+    "cursor",
+    "chatgpt",
+    "agent-to-agent",
+    "multi-agent",
+    "context-extraction",
+    "code-analysis",
+    "developer-productivity"
   ],
   "bin": {
     "big-brain": "build/index.js"

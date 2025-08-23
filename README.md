@@ -1,5 +1,9 @@
 # BigBrain MCP Server
 
+[![npm version](https://badge.fury.io/js/@probelabs%2Fbig-brain.svg)](https://www.npmjs.com/package/@probelabs/big-brain)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![MCP Compatible](https://img.shields.io/badge/MCP-Compatible-blue)](https://github.com/anthropics/model-context-protocol)
+
 When your AI needs a bigger brain.
 
 ## Overview
