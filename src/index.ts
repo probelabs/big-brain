@@ -474,7 +474,7 @@ The <code> section above contains extracted code in two formats:
 - **Output Format**: Provide targeted diffs and detailed explanations (never complete file rewrites)
 - **Focus on symbols**: When <symbol> tags are present, pay special attention to those specific code fragments
 - **Follow-up Questions**: If you need additional code context or clarification:
-  - For missing code/files: Ask specifically which files, functions, or symbols you need (use # syntax)
+  - For missing code/files: Ask specifically which files, functions, symbols, or line ranges you need (use # for symbols, : for lines)
   - For user clarification: Ask clear, specific questions about requirements or expected behavior
   - Distinguish between needing more data (code) vs needing user input (requirements)
 
@@ -743,10 +743,11 @@ class BigBrainServer {
             + '• For detailed explanations and analysis '
             + '\n\n📋 CRITICAL FOR CHATGPT - REDUCE CONTEXT SIZE: '
             + '1. **PREFER SYMBOLS OVER FILES**: Always use # syntax for specific functions/classes (e.g., main.rs#some_function, app.py#MyClass) '
-            + '2. **AVOID FULL FILES**: Only include full file paths when absolutely necessary - symbols are much smaller '
-            + '3. **BE SPECIFIC**: Use precise symbol references to minimize context (e.g., config.ts#DatabaseConfig instead of entire config.ts) '
-            + '4. **MULTIPLE SYMBOLS**: List all relevant symbols individually (file.ts#func1, file.ts#func2) rather than entire files '
-            + '5. Complete problem description with focused context '
+            + '2. **USE LINE RANGES WHEN NEEDED**: If you know specific lines, use :line syntax (e.g., file.ts:123 for single line, file.ts:100-150 for range with buffer) '
+            + '3. **AVOID FULL FILES**: Only include full file paths when absolutely necessary - symbols and line ranges are much smaller '
+            + '4. **BE SPECIFIC**: Use precise references: symbols (config.ts#DatabaseConfig), lines (app.ts:45-60), or single line (utils.js:123) '
+            + '5. **MULTIPLE TARGETS**: List all relevant targets individually (file.ts#func1, file.ts#func2, file.ts:200-220) '
+            + '6. Complete problem description with focused context '
             + '\n\n⚠️ ChatGPT has smaller context limits - using symbols instead of full files ensures your question fits and gets answered. '
             + '\n\n⚡ Response time: 30 seconds to 20 minutes (ChatGPT Pro thinking can take time).'
           ) : CONFIG.loopPrompt ? (
@@ -761,7 +762,7 @@ class BigBrainServer {
             + '• User wants to leverage advanced AI models '
             + '\n\n📋 CRITICAL REQUIREMENTS for your question: '
             + '1. ALL specific file paths (absolute paths like /Users/username/project/src/main.rs) '
-            + '2. ALL specific functions/objects/variables/types using # syntax (e.g., main.rs#some_function, app.py#MyClass) '
+            + '2. SPECIFIC REFERENCES using: # for symbols (main.rs#some_function), : for lines (app.py:45 or app.py:100-150) '
             + '3. ALL related dependencies and context - do not omit anything '
             + '4. Clear explanation of what needs to be analyzed or modified '
             + '5. Complete problem description with background context '
@@ -778,7 +779,7 @@ class BigBrainServer {
             + '• User wants to leverage advanced AI models '
             + '\n\n📋 CRITICAL REQUIREMENTS for your question: '
             + '1. ALL specific file paths (absolute paths like /Users/username/project/src/main.rs) '
-            + '2. ALL specific functions/objects/variables/types using # syntax (e.g., main.rs#some_function, app.py#MyClass) '
+            + '2. SPECIFIC REFERENCES using: # for symbols (main.rs#some_function), : for lines (app.py:45 or app.py:100-150) '
             + '3. ALL related dependencies and context - do not omit anything '
             + '4. Clear explanation of what needs to be analyzed or modified '
             + '5. Complete problem description with background context '
@@ -790,8 +791,8 @@ class BigBrainServer {
               question: {
                 type: 'string',
                 description: CONFIG.chatGPTMode 
-                  ? 'ChatGPT-optimized question. PREFER SYMBOLS to reduce context: (1) Use # syntax for ALL specific functions/classes (e.g., file.ts#functionName, class.py#ClassName), (2) AVOID full file paths unless absolutely necessary - symbols are much smaller, (3) List multiple symbols individually (file.ts#func1, file.ts#func2), (4) Include focused problem context. REMEMBER: ChatGPT has limited context - using symbols instead of files ensures your question fits!'
-                  : 'Comprehensive question for external AI analysis. MUST include: (1) All absolute file paths (e.g., /Users/name/project/src/file.ts), (2) All specific symbols using # syntax (e.g., file.ts#functionName, class.py#ClassName), (3) Complete problem context and what you need analyzed/fixed. Be exhaustive - missing context leads to incomplete analysis.',
+                  ? 'ChatGPT-optimized question. PREFER SPECIFIC REFERENCES to reduce context: (1) Use # for symbols (file.ts#functionName), (2) Use : for line ranges (file.ts:45 or file.ts:100-150 with buffer), (3) AVOID full files - symbols/lines are smaller, (4) List multiple targets (file.ts#func1, file.ts:200-220), (5) Include focused problem context. REMEMBER: ChatGPT has limited context - using symbols/lines instead of full files ensures your question fits!'
+                  : 'Comprehensive question for external AI analysis. MUST include: (1) All absolute file paths (e.g., /Users/name/project/src/file.ts), (2) Specific references using # for symbols (file.ts#functionName) or : for lines (file.py:45 or file.py:100-150), (3) Complete problem context and what you need analyzed/fixed. Be exhaustive - missing context leads to incomplete analysis.',
               },
             },
             required: ['question'],
@@ -951,7 +952,7 @@ class BigBrainServer {
           const probeOutput = typeof extractedContent === 'string' ? extractedContent : JSON.stringify(extractedContent, null, 2);
           throw new McpError(
             ErrorCode.InvalidParams,
-            `No relevant code files found in your question. Please include specific file paths and use # syntax for functions/objects (e.g., main.rs#some_function)\n\nProbe extract output:\n${probeOutput}`
+            `No relevant code files found in your question. Please include specific file paths and use:\n• # syntax for functions/objects (e.g., main.rs#some_function)\n• : syntax for line ranges (e.g., file.py:45 for single line, file.py:100-150 for range)\n\nProbe extract output:\n${probeOutput}`
           );
         }
 
@@ -1075,7 +1076,7 @@ class BigBrainServer {
                 + `3. FALLBACK: If clipboard/dialog fails, read content from: ${CONFIG.outputPath} (do not try by yourself to read this file)\n`
                 + `4. After obtaining a response from Big Brain, return to the IDE with the response. Always include the path to the question file (${CONFIG.outputPath}) in case clipboard fails.\n\n`
                 + `⚡ HANDLING BIGBRAIN RESPONSES:\n`
-                + `• If BigBrain asks for specific code/files (e.g., "show me file.ts#functionName"), automatically prepare a new BigBrain request with that information\n`
+                + `• If BigBrain asks for specific code/files (e.g., "show me file.ts#functionName" or "file.py:100-150"), automatically prepare a new BigBrain request with that information\n`
                 + `• Treat each re-invocation as a NEW question - include ALL necessary context from the original question plus requested data\n`
                 + `• If BigBrain asks questions about user requirements/preferences, wait for user clarification before proceeding\n`
                 + `• When BigBrain provides the analysis, proceed with implementing the suggested changes\n\n`
