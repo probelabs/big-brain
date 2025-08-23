@@ -1158,9 +1158,8 @@ Current query would require a model with at least ${totalTokens.toLocaleString()
           ? `\n📊 Context size: ${totalTokens.toLocaleString()} tokens (${Math.round((totalTokens / CONFIG.maxTokens) * 100)}% of ${CONFIG.maxTokens.toLocaleString()} limit)`
           : '';
         
-        tokenWarning = totalTokens > 30000 && !validatedArgs.skipTokenCheck
-          ? `\n⚠️ Large context: Consider using more specific references (symbols/line ranges) for better performance`
-          : '';
+        // No warning - only hard limit enforcement
+        tokenWarning = '';
         
         return {
           content: [
