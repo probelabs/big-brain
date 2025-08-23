@@ -16,6 +16,7 @@ import { exec } from 'child_process';
 import { ChatGPTBridge, isChatGPTInstalled, ensureReaderScripts } from './chatgpt-bridge.js';
 // @ts-ignore - @buger/probe doesn't have TypeScript declarations (using latest version)
 import { extract } from '@buger/probe';
+import { getEncoding } from 'js-tiktoken';
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import {
@@ -39,11 +40,22 @@ if (loopIndex !== -1 && args[loopIndex + 1]) {
 // Check for --chatgpt mode
 const chatGPTMode = args.includes('--chatgpt');
 
+// Parse --max-tokens flag (default: 40000)
+let maxTokens = 40000;
+const maxTokensIndex = args.indexOf('--max-tokens');
+if (maxTokensIndex !== -1 && args[maxTokensIndex + 1]) {
+  const parsed = parseInt(args[maxTokensIndex + 1], 10);
+  if (!isNaN(parsed) && parsed > 0) {
+    maxTokens = parsed;
+  }
+}
+
 // Configuration
 const CONFIG = {
   outputPath: path.join(os.tmpdir(), 'big_brain_output.txt'),
   maxFiles: 100,
   maxFileSize: 1_000_000, // 1 MB
+  maxTokens: maxTokens, // Token limit for generated content
   // Parse command-line flags - enabled by default, disable with flags
   enableSound: !args.includes('--disable-sound'),
   enableNotify: !args.includes('--disable-notification'),
@@ -53,6 +65,7 @@ const CONFIG = {
 
 interface BigBrainArgs {
   question: string;
+  skipTokenCheck?: boolean;
 }
 
 /**
@@ -64,6 +77,12 @@ interface FileContent {
   language: string;
   lines?: [number, number]; // Optional line range [start, end]
   nodeType?: string; // Optional node type from Probe (e.g., 'text_search', 'ast_search')
+}
+
+interface TokenAnalysis {
+  path: string;
+  tokens: number;
+  percentage: number;
 }
 
 interface PlatformInfo {
@@ -602,6 +621,28 @@ const escapeXml = (unsafe: string): string => {
 };
 
 /**
+ * Counts the number of tokens in the given text using cl100k_base encoding.
+ * This encoding is used by GPT-4, ChatGPT, and other modern models.
+ * @param text - The text to count tokens for
+ * @returns The number of tokens
+ */
+const countTokens = (text: string): number => {
+  try {
+    // cl100k_base is the encoding for GPT-4 and ChatGPT models
+    const encoding = getEncoding('cl100k_base');
+    const tokens = encoding.encode(text);
+    const count = tokens.length;
+    // Note: js-tiktoken doesn't have a free() method like the Python version
+    return count;
+  } catch (error) {
+    console.error('Failed to count tokens:', error);
+    // Return a rough estimate based on characters if encoding fails
+    // Average is roughly 4 characters per token
+    return Math.ceil(text.length / 4);
+  }
+};
+
+/**
  * Validates a file path to ensure:
  * 1. It's absolute.
  * 2. The file exists.
@@ -794,6 +835,11 @@ class BigBrainServer {
                   ? 'ChatGPT-optimized question. PREFER SPECIFIC REFERENCES to reduce context: (1) Use # for symbols (file.ts#functionName), (2) Use : for line ranges (file.ts:45 or file.ts:100-150 with buffer), (3) AVOID full files - symbols/lines are smaller, (4) List multiple targets (file.ts#func1, file.ts:200-220), (5) Include focused problem context. REMEMBER: ChatGPT has limited context - using symbols/lines instead of full files ensures your question fits!'
                   : 'Comprehensive question for external AI analysis. MUST include: (1) All absolute file paths (e.g., /Users/name/project/src/file.ts), (2) Specific references using # for symbols (file.ts#functionName) or : for lines (file.py:45 or file.py:100-150), (3) Complete problem context and what you need analyzed/fixed. Be exhaustive - missing context leads to incomplete analysis.',
               },
+              skipTokenCheck: {
+                type: 'boolean',
+                description: `Skip token limit checking (use with caution - may exceed model context limits). Current limit: ${CONFIG.maxTokens} tokens.`,
+                required: false,
+              },
             },
             required: ['question'],
           },
@@ -959,6 +1005,65 @@ class BigBrainServer {
         // Generate the final formatted content
         const formattedContent = generateFormattedOutput(fileContents, validatedArgs.question);
 
+        // Token checking (unless explicitly skipped)
+        let totalTokens = 0;
+        let tokenAnalysis: TokenAnalysis[] = [];
+        let tokenInfo = '';
+        let tokenWarning = '';
+        
+        if (!validatedArgs.skipTokenCheck) {
+          // Calculate tokens per file for detailed breakdown
+          tokenAnalysis = fileContents.map(file => {
+            const fileTokens = countTokens(file.content);
+            return {
+              path: file.path,
+              tokens: fileTokens,
+              percentage: 0 // Will be calculated after total
+            };
+          });
+
+          // Add tokens from the prompt structure (role instructions, task wrapper, etc.)
+          const promptOverhead = countTokens(formattedContent) - tokenAnalysis.reduce((sum, f) => sum + f.tokens, 0);
+          totalTokens = countTokens(formattedContent);
+          
+          // Calculate percentages
+          tokenAnalysis = tokenAnalysis.map(file => ({
+            ...file,
+            percentage: Math.round((file.tokens / totalTokens) * 100)
+          }));
+
+          // Check if we exceed the limit
+          if (totalTokens > CONFIG.maxTokens) {
+            // Sort by token count descending to show biggest files first
+            const sortedAnalysis = [...tokenAnalysis].sort((a, b) => b.tokens - a.tokens);
+            
+            const errorMessage = `❌ Content exceeds token limit: ${totalTokens.toLocaleString()} tokens (max: ${CONFIG.maxTokens.toLocaleString()})
+
+📊 Token breakdown by file/symbol:
+${sortedAnalysis.slice(0, 10).map(f => 
+  `  • ${f.path}: ${f.tokens.toLocaleString()} tokens (${f.percentage}%)`
+).join('\n')}${sortedAnalysis.length > 10 ? `\n  ... and ${sortedAnalysis.length - 10} more files` : ''}
+
+Prompt overhead: ${promptOverhead.toLocaleString()} tokens
+
+To reduce context size:
+  • Use # syntax for specific symbols instead of full files (e.g., file.ts#functionName)
+  • Use : syntax for line ranges instead of entire files (e.g., file.py:100-200)
+  • Focus on fewer files at once
+  • Target the largest files above with more specific references
+
+Current query would require a model with at least ${totalTokens.toLocaleString()} token context window.`;
+
+            throw new McpError(
+              ErrorCode.InvalidParams,
+              errorMessage
+            );
+          }
+        } else {
+          // Still count tokens for reporting, just don't enforce limit
+          totalTokens = countTokens(formattedContent);
+        }
+
         // Save to configured path
         await fs.writeFile(CONFIG.outputPath, formattedContent, 'utf8');
 
@@ -1003,7 +1108,7 @@ class BigBrainServer {
                 content: [
                   {
                     type: 'text',
-                    text: `🧠 ChatGPT Analysis Complete (${chatGPTResult.elapsed}s)\n\n`
+                    text: `🧠 ChatGPT Analysis Complete (${chatGPTResult.elapsed}s)${tokenInfo}\n\n`
                       + metricsText
                       + `═══════════════════════════════════════\n\n`
                       + chatGPTResult.response
@@ -1048,13 +1153,22 @@ class BigBrainServer {
         await handleOutput(formattedContent, fileCount, validatedArgs.question);
         const fileList = fileContents.map(f => `- ${f.path}`).join('\\n');
         
+        // Update token info message (already declared above)
+        tokenInfo = totalTokens > 0 
+          ? `\n📊 Context size: ${totalTokens.toLocaleString()} tokens (${Math.round((totalTokens / CONFIG.maxTokens) * 100)}% of ${CONFIG.maxTokens.toLocaleString()} limit)`
+          : '';
+        
+        tokenWarning = totalTokens > 30000 && !validatedArgs.skipTokenCheck
+          ? `\n⚠️ Large context: Consider using more specific references (symbols/line ranges) for better performance`
+          : '';
+        
         return {
           content: [
             {
               type: 'text',
               text: CONFIG.loopPrompt ? (
                 // Loop mode response for multi-agent systems
-                `Successfully prepared question with ${fileCount} file${fileCount !== 1 ? 's' : ''} using probe extract.\n\n`
+                `Successfully prepared question with ${fileCount} file${fileCount !== 1 ? 's' : ''} using probe extract.${tokenInfo}${tokenWarning}\n\n`
                 + `Question saved to: ${CONFIG.outputPath}\n\n`
                 + `${CONFIG.loopPrompt}\n\n`
                 + `Pass to the agent instruction to read the question from this file: ${CONFIG.outputPath}\n\n`
@@ -1066,7 +1180,7 @@ class BigBrainServer {
                 + `• Chain multiple BigBrain calls if needed to gather all required context`
               ) : (
                 // Original user-interactive response
-                `Successfully prepared question with ${fileCount} file${fileCount !== 1 ? 's' : ''} using probe extract.\n\n`
+                `Successfully prepared question with ${fileCount} file${fileCount !== 1 ? 's' : ''} using probe extract.${tokenInfo}${tokenWarning}\n\n`
                 + `Question also saved to file, if clipboard failed: ${CONFIG.outputPath} (do not try by yourself to read this file)\n\n`
                 + 'IMPORTANT: This tool requires user interaction:\n\n'
                 + '1. The formatted content has been prepared for you.\n'

@@ -1,6 +1,6 @@
 {
   "name": "@probelabs/big-brain",
-  "version": "0.9.4",
+  "version": "0.10.0",
   "main": "build/index.js",
   "description": "MCP server for formatting complex code questions with file context",
   "type": "module",
@@ -37,6 +37,7 @@
     "@modelcontextprotocol/sdk": "^0.6.0",
     "clipboardy": "^4.0.0",
     "fs-extra": "^11.3.0",
+    "js-tiktoken": "^1.0.21",
     "run-applescript": "^7.0.0"
   },
   "devDependencies": {
