@@ -838,7 +838,6 @@ class BigBrainServer {
               skipTokenCheck: {
                 type: 'boolean',
                 description: `Skip token limit checking (use with caution - may exceed model context limits). Current limit: ${CONFIG.maxTokens} tokens.`,
-                required: false,
               },
             },
             required: ['question'],
