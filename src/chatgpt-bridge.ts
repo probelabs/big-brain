@@ -186,57 +186,92 @@ class ChatGPTAutomation {
     let lastResponse = null;
     let stableCount = 0;
     let checkNumber = 0;
+    const spinnerFrames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
+    let lastStatus = '';
+    let lastPreview = '';
     
     while (Date.now() - startTime < ${this.maxWaitTime}) {
       checkNumber++;
       const elapsed = Math.round((Date.now() - startTime) / 1000);
+      const spinner = spinnerFrames[checkNumber % spinnerFrames.length];
       const uiData = await this.readUI();
       
+      let status = '';
+      let showPreview = false;
+      let isNewState = false;
+      
       if (uiData.error) {
-        console.log(\`[Terminal] Check #\${checkNumber} (\${elapsed}s): UI read error - \${uiData.error}\`);
+        status = \`UI read error - \${uiData.error}\`;
+        if (status !== lastStatus) {
+          process.stdout.write('\\n');
+          console.log(\`[Terminal] ⚠️  \${status}\`);
+          lastStatus = status;
+        }
       } else if (!uiData.messages || uiData.messages.length === 0) {
-        console.log(\`[Terminal] Check #\${checkNumber} (\${elapsed}s): No messages found yet\`);
+        status = 'No messages found yet';
       } else if (uiData.messages.length === 1) {
-        console.log(\`[Terminal] Check #\${checkNumber} (\${elapsed}s): Only user message found, waiting for AI response...\`);
+        status = 'Waiting for AI response...';
       } else if (uiData.messages && uiData.messages.length > 1) {
         // Get the last message (AI response)
         const aiResponse = uiData.messages[uiData.messages.length - 1];
         
         if (aiResponse && aiResponse.trim().length > 0) {
           const responseLength = aiResponse.length;
-          const preview = aiResponse.substring(0, 100).replace(/\\n/g, ' ');
+          const preview = aiResponse.substring(0, 80).replace(/\\n/g, ' ');
           
           if (aiResponse === lastResponse) {
             stableCount++;
-            console.log(\`[Terminal] Check #\${checkNumber} (\${elapsed}s): Response unchanged (\${responseLength} chars) - Stability: \${stableCount}/\${this.stableChecks}\`);
-            console.log(\`[Terminal]   Preview: "\${preview}..."\`);
+            status = \`Response stable (\${responseLength} chars) - Confirming: \${stableCount}/\${this.stableChecks}\`;
             
             if (stableCount >= ${this.stableChecks}) {
               this.metrics.waitingTime = Date.now() - startTime;
+              process.stdout.write('\\r\\x1b[K'); // Clear line
               console.log(\`[Terminal] ✅ Response confirmed stable after \${elapsed} seconds\`);
               return aiResponse;
             }
           } else {
             if (lastResponse === null) {
-              console.log(\`[Terminal] Check #\${checkNumber} (\${elapsed}s): Initial AI response detected (\${responseLength} chars)\`);
+              status = \`AI responding... (\${responseLength} chars)\`;
+              isNewState = true;
             } else {
               const sizeDiff = responseLength - (lastResponse ? lastResponse.length : 0);
-              console.log(\`[Terminal] Check #\${checkNumber} (\${elapsed}s): Response still changing (+\${sizeDiff} chars, total: \${responseLength})\`);
+              const diffStr = sizeDiff > 0 ? \`+\${sizeDiff}\` : \`\${sizeDiff}\`;
+              status = \`AI still typing... (\${diffStr} chars, total: \${responseLength})\`;
             }
-            console.log(\`[Terminal]   Preview: "\${preview}..."\`);
+            
+            // Show preview when response changes significantly or is first detected
+            if (preview !== lastPreview || isNewState) {
+              showPreview = true;
+              lastPreview = preview;
+            }
+            
             stableCount = 0;
             lastResponse = aiResponse;
           }
         } else {
-          console.log(\`[Terminal] Check #\${checkNumber} (\${elapsed}s): Empty AI response\`);
+          status = 'Empty AI response';
         }
       }
+      
+      // Update the status line
+      if (status !== lastStatus || showPreview) {
+        if (showPreview && lastPreview) {
+          process.stdout.write('\\r\\x1b[K'); // Clear line
+          console.log(\`[Terminal] 💬 "\${lastPreview}..."\`);
+        }
+        lastStatus = status;
+      }
+      
+      // Write the updating status line
+      const statusLine = \`[Terminal] \${spinner} Check #\${checkNumber} (\${elapsed}s): \${status}\`;
+      process.stdout.write(\`\\r\\x1b[K\${statusLine}\`);
       
       await this.wait(${this.checkInterval});
     }
     
     this.metrics.waitingTime = Date.now() - startTime;
     const totalSeconds = Math.round(this.metrics.waitingTime / 1000);
+    process.stdout.write('\\r\\x1b[K'); // Clear line
     console.log(\`[Terminal] ⏱️ Timeout reached after \${totalSeconds} seconds\`);
     return lastResponse || null;
   }
