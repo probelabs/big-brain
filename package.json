@@ -1,6 +1,6 @@
 {
   "name": "@probelabs/big-brain",
-  "version": "0.10.3",
+  "version": "0.10.4",
   "main": "build/index.js",
   "description": "BigBrain MCP Server - When your AI needs a bigger brain. Intelligent context extraction for getting fresh AI insights when stuck.",
   "type": "module",
