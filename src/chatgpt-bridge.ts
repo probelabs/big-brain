@@ -185,26 +185,50 @@ class ChatGPTAutomation {
     const startTime = Date.now();
     let lastResponse = null;
     let stableCount = 0;
+    let checkNumber = 0;
     
     while (Date.now() - startTime < ${this.maxWaitTime}) {
+      checkNumber++;
+      const elapsed = Math.round((Date.now() - startTime) / 1000);
       const uiData = await this.readUI();
       
-      if (!uiData.error && uiData.messages && uiData.messages.length > 1) {
+      if (uiData.error) {
+        console.log(\`[Terminal] Check #\${checkNumber} (\${elapsed}s): UI read error - \${uiData.error}\`);
+      } else if (!uiData.messages || uiData.messages.length === 0) {
+        console.log(\`[Terminal] Check #\${checkNumber} (\${elapsed}s): No messages found yet\`);
+      } else if (uiData.messages.length === 1) {
+        console.log(\`[Terminal] Check #\${checkNumber} (\${elapsed}s): Only user message found, waiting for AI response...\`);
+      } else if (uiData.messages && uiData.messages.length > 1) {
         // Get the last message (AI response)
         const aiResponse = uiData.messages[uiData.messages.length - 1];
         
         if (aiResponse && aiResponse.trim().length > 0) {
+          const responseLength = aiResponse.length;
+          const preview = aiResponse.substring(0, 100).replace(/\\n/g, ' ');
+          
           if (aiResponse === lastResponse) {
             stableCount++;
+            console.log(\`[Terminal] Check #\${checkNumber} (\${elapsed}s): Response unchanged (\${responseLength} chars) - Stability: \${stableCount}/\${this.stableChecks}\`);
+            console.log(\`[Terminal]   Preview: "\${preview}..."\`);
+            
             if (stableCount >= ${this.stableChecks}) {
               this.metrics.waitingTime = Date.now() - startTime;
-              console.log('[Terminal] Response complete');
+              console.log(\`[Terminal] ✅ Response confirmed stable after \${elapsed} seconds\`);
               return aiResponse;
             }
           } else {
+            if (lastResponse === null) {
+              console.log(\`[Terminal] Check #\${checkNumber} (\${elapsed}s): Initial AI response detected (\${responseLength} chars)\`);
+            } else {
+              const sizeDiff = responseLength - (lastResponse ? lastResponse.length : 0);
+              console.log(\`[Terminal] Check #\${checkNumber} (\${elapsed}s): Response still changing (+\${sizeDiff} chars, total: \${responseLength})\`);
+            }
+            console.log(\`[Terminal]   Preview: "\${preview}..."\`);
             stableCount = 0;
             lastResponse = aiResponse;
           }
+        } else {
+          console.log(\`[Terminal] Check #\${checkNumber} (\${elapsed}s): Empty AI response\`);
         }
       }
       
@@ -212,6 +236,8 @@ class ChatGPTAutomation {
     }
     
     this.metrics.waitingTime = Date.now() - startTime;
+    const totalSeconds = Math.round(this.metrics.waitingTime / 1000);
+    console.log(\`[Terminal] ⏱️ Timeout reached after \${totalSeconds} seconds\`);
     return lastResponse || null;
   }
 
