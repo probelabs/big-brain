@@ -38,6 +38,7 @@ Then use the web UI to call the ask_big_brain tool.
 - `--loop <prompt>` - Enable loop mode for multi-agent systems
 - `--disable-sound` - Disable sound notifications
 - `--disable-notification` - Disable dialog notifications
+- `--max-tokens <number>` - Set custom token limit (default: 40000)
 
 ### Testing Workflow
 1. Build the project: `npm run build`

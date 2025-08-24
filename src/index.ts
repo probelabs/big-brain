@@ -872,7 +872,8 @@ class BigBrainServer {
             inputFile: tempQuestionFile,
             format: 'json',
             json: false,  // Get raw string output to avoid probe's JSON parsing issues
-            allowTests: true  // Include test files in extraction
+            allowTests: true,  // Include test files in extraction
+            noGitignore: true  // Always include all files, ignore .gitignore
           });
         } catch (probeError: any) {
           const errorDetails = [
