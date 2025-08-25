@@ -180,8 +180,13 @@ class ChatGPTAutomation {
     }
   }
 
-  async waitForResponse() {
+  async waitForResponse(originalMessage?: string) {
     console.log('[Terminal] Waiting for response...');
+    
+    // Extract first 100 chars of the user message for validation
+    const messagePreview = originalMessage ? 
+      originalMessage.substring(0, 100).replace(/\\n/g, ' ').trim() : '';
+    
     const startTime = Date.now();
     let lastResponse = null;
     let stableCount = 0;
@@ -189,6 +194,7 @@ class ChatGPTAutomation {
     const spinnerFrames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
     let lastStatus = '';
     let lastPreview = '';
+    let conversationValidated = false;
     
     while (Date.now() - startTime < ${this.maxWaitTime}) {
       checkNumber++;
@@ -212,6 +218,27 @@ class ChatGPTAutomation {
       } else if (uiData.messages.length === 1) {
         status = 'Waiting for AI response...';
       } else if (uiData.messages && uiData.messages.length > 1) {
+        // Validate conversation context on first detection of multiple messages
+        if (!conversationValidated && messagePreview) {
+          const userMessage = uiData.messages[uiData.messages.length - 2]; // Second to last should be user message
+          if (userMessage) {
+            const userMessageStart = userMessage.substring(0, 100).replace(/\\n/g, ' ').trim();
+            
+            // Check if the user message in UI matches what we sent
+            if (!userMessageStart.includes(messagePreview.substring(0, 50)) && 
+                !messagePreview.includes(userMessageStart.substring(0, 50))) {
+              process.stdout.write('\\r\\x1b[K'); // Clear line
+              console.log(\`[Terminal] ⚠️  Warning: Conversation mismatch detected!\`);
+              console.log(\`[Terminal]    Expected: "\${messagePreview.substring(0, 50)}..."\`);
+              console.log(\`[Terminal]    Found: "\${userMessageStart.substring(0, 50)}..."\`);
+              console.log(\`[Terminal] ❌ Aborting - wrong conversation thread\`);
+              throw new Error('Wrong conversation thread - user message does not match');
+            }
+            conversationValidated = true;
+            console.log(\`[Terminal] ✓ Conversation validated - correct thread\`);
+          }
+        }
+        
         // Get the last message (AI response)
         const aiResponse = uiData.messages[uiData.messages.length - 1];
         
@@ -292,8 +319,8 @@ class ChatGPTAutomation {
       // Step 3: Paste and send message
       await this.pasteMessage(message);
       
-      // Step 4: Wait for response
-      const response = await this.waitForResponse();
+      // Step 4: Wait for response (pass message for validation)
+      const response = await this.waitForResponse(message);
       
       const elapsed = Math.round((Date.now() - startTime) / 1000);
       
