@@ -41,9 +41,13 @@ export class ChatGPTBridge {
   private stableChecks: number;
   private maxWaitTime: number;
   private debug: boolean;
+  private initialCheckInterval: number;
+  private stabilityCheckInterval: number;
 
   constructor(options: ChatGPTBridgeOptions = {}) {
-    this.checkInterval = options.checkInterval || 5000;  // Check every 5 seconds (less aggressive)
+    this.checkInterval = options.checkInterval || 5000;  // Check every 5 seconds when waiting for initial response
+    this.initialCheckInterval = 5000;  // Check every 5 seconds when waiting for initial response
+    this.stabilityCheckInterval = 2000;  // Check every 2 seconds during stability confirmation
     this.stableChecks = options.stableChecks || 2;  // Only need 2 stable reads
     this.maxWaitTime = options.maxWaitTime || 1200000;  // 20 minutes default timeout (for ChatGPT Pro thinking)
     this.debug = options.debug || false;
@@ -293,7 +297,10 @@ class ChatGPTAutomation {
       const statusLine = \`[Terminal] \${spinner} Check #\${checkNumber} (\${elapsed}s): \${status}\`;
       process.stdout.write(\`\\r\\x1b[K\${statusLine}\`);
       
-      await this.wait(${this.checkInterval});
+      // Use faster interval when checking stability, normal interval otherwise
+      const currentInterval = (lastResponse !== null && stableCount > 0) ? 
+        ${this.stabilityCheckInterval} : ${this.initialCheckInterval};
+      await this.wait(currentInterval);
     }
     
     this.metrics.waitingTime = Date.now() - startTime;
