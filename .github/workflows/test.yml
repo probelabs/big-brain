@@ -1,0 +1,60 @@
+name: Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+    
+    - name: Install dependencies
+      run: npm install
+    
+    - name: Build project
+      run: npm run build
+    
+    - name: Test MCP functionality
+      run: node scripts/tests/test_mcp_direct.js
+    
+    - name: Test token counting
+      run: node scripts/tests/test_all_cases.js
+    
+    - name: Validate generated JavaScript in templates
+      run: |
+        echo "Extracting and validating template literals..."
+        node -e "
+        const fs = require('fs');
+        const path = require('path');
+        
+        // Read the built file
+        const content = fs.readFileSync('build/chatgpt-bridge.js', 'utf8');
+        
+        // Extract the script template (simplified check)
+        const match = content.match(/const scriptContent = \`([^`]+)\`/s);
+        if (match) {
+          const scriptContent = match[1];
+          
+          // Write to temp file
+          fs.writeFileSync('temp_validate.mjs', scriptContent);
+          
+          // Try to parse it with Node.js
+          require('child_process').exec('node --check temp_validate.mjs', (error, stdout, stderr) => {
+            if (error) {
+              console.error('Template JavaScript has syntax errors:', stderr);
+              process.exit(1);
+            }
+            console.log('Template JavaScript is valid');
+          });
+        }
+        "

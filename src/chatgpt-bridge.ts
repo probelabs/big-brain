@@ -248,7 +248,7 @@ class ChatGPTAutomation {
           
           if (aiResponse === lastResponse) {
             stableCount++;
-            status = \`Response stable (\${responseLength} chars) - Confirming: \${stableCount}/\${this.stableChecks}\`;
+            status = \`Response stable (\${responseLength} chars) - Confirming: \${stableCount}/${this.stableChecks}\`;
             
             if (stableCount >= ${this.stableChecks}) {
               this.metrics.waitingTime = Date.now() - startTime;
