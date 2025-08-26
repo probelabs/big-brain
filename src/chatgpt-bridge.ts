@@ -180,7 +180,7 @@ class ChatGPTAutomation {
     }
   }
 
-  async waitForResponse(originalMessage?: string) {
+  async waitForResponse(originalMessage) {
     console.log('[Terminal] Waiting for response...');
     
     // Extract first 100 chars of the user message for validation
