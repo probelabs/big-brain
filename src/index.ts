@@ -915,9 +915,18 @@ class BigBrainServer {
             extractResult = extractedContent;
           }
         } catch (parseError: any) {
-          // If JSON parsing fails, use the raw content as fallback
-          console.error('JSON parsing failed, using raw content as fallback:', parseError.message);
-          if (typeof extractedContent === 'string' && extractedContent.trim().length > 0) {
+          // Check if this is a "no file paths found" case vs a real parsing error
+          if (typeof extractedContent === 'string' && 
+              extractedContent.includes('No file paths found in input file')) {
+            // This is a valid case - question doesn't reference any files
+            console.log('[BigBrain] No file paths detected in question - treating as general question');
+            extractResult = {
+              results: [],
+              summary: { count: 0, total_bytes: 0, total_tokens: 0 },
+              noFilesDetected: true
+            };
+          } else if (typeof extractedContent === 'string' && extractedContent.trim().length > 0) {
+            // Fallback for other parsing issues
             extractResult = {
               results: [{
                 code: extractedContent,
@@ -994,12 +1003,110 @@ class BigBrainServer {
         }
 
         if (fileContents.length === 0) {
-          // Include the raw probe output to help debug what files were attempted and why they failed
-          const probeOutput = typeof extractedContent === 'string' ? extractedContent : JSON.stringify(extractedContent, null, 2);
-          throw new McpError(
-            ErrorCode.InvalidParams,
-            `No relevant code files found in your question. Please include specific file paths and use:\n• # syntax for functions/objects (e.g., main.rs#some_function)\n• : syntax for line ranges (e.g., file.py:45 for single line, file.py:100-150 for range)\n\nProbe extract output:\n${probeOutput}`
-          );
+          // Check if this is a valid "no files mentioned" case or an error case
+          if (extractResult.noFilesDetected) {
+            // Valid case: question doesn't reference any files - continue as general question
+            console.log('[BigBrain] Processing as general question without code context');
+            
+            // Create simple formatted output for general questions
+            const formattedContent = `<question>
+${validatedArgs.question}
+</question>
+
+Note: This question does not reference any specific code files. External AI will provide general guidance based on the question alone.`;
+            
+            // Use the same response flow as file-based questions
+            const fileCount = 0;
+            
+            // Save to configured path
+            await fs.writeFile(CONFIG.outputPath, formattedContent, 'utf8');
+            
+            // Skip token checking for general questions
+            const tokenInfo = '';
+            
+            // Handle response based on mode (same logic as file-based questions)
+            if (CONFIG.chatGPTMode) {
+              try {
+                // Check if ChatGPT is installed
+                if (!await isChatGPTInstalled()) {
+                  throw new McpError(
+                    ErrorCode.InvalidParams,
+                    'ChatGPT Desktop app is not installed. Please install it from https://chatgpt.com/desktop'
+                  );
+                }
+                
+                // Ensure reader scripts are available
+                await ensureReaderScripts();
+                
+                // Create ChatGPT bridge and get response
+                const chatGPTBridge = new ChatGPTBridge();
+                const response = await chatGPTBridge.query(formattedContent, true);
+                
+                if (response.success && response.response) {
+                  return {
+                    content: [{
+                      type: 'text',
+                      text: `✅ ChatGPT Response (General Question):\n\n${response.response}\n\n⏱️ Response time: ${response.elapsed} seconds`
+                    }]
+                  };
+                } else {
+                  throw new McpError(
+                    ErrorCode.InternalError,
+                    `ChatGPT automation failed: ${response.error || 'Unknown error'}`
+                  );
+                }
+              } catch (chatGPTError: any) {
+                throw new McpError(
+                  ErrorCode.InternalError,
+                  `ChatGPT mode error: ${chatGPTError.message}`
+                );
+              }
+            } else if (CONFIG.loopPrompt) {
+              // Loop mode - save to file and return instructions
+              await handleOutput(formattedContent, fileCount, validatedArgs.question);
+              
+              return {
+                content: [{
+                  type: 'text',
+                  text: `Successfully prepared general question (no files).${tokenInfo}\n\n`
+                    + `Question saved to: ${CONFIG.outputPath}\n\n`
+                    + `${CONFIG.loopPrompt}\n\n`
+                    + `Pass to the agent instruction to read the question from this file: ${CONFIG.outputPath}\n\n`
+                    + `⚡ AUTOMATIC RE-INVOCATION (Loop Mode):\n`
+                    + `• This is a general question without code context\n`
+                    + `• The question has been saved and is ready for external AI processing\n`
+                    + `• Follow the loop prompt instructions above`
+                }]
+              };
+            } else {
+              // Standard mode - copy to clipboard and show dialog
+              await showNotificationAndCopy(formattedContent, fileCount, validatedArgs.question);
+              
+              return {
+                content: [{
+                  type: 'text',
+                  text: `Successfully prepared general question (no files).${tokenInfo}\n\n`
+                    + `Question also saved to file, if clipboard failed: ${CONFIG.outputPath} (do not try by yourself to read this file)\n\n`
+                    + 'IMPORTANT: This tool requires user interaction:\n\n'
+                    + '1. The formatted content has been prepared for you.\n'
+                    + (CONFIG.enableNotify 
+                        ? '2. Copy the content from the dialog and paste it into the Big Brain system.\n'
+                        : '2. The content has been copied to your clipboard automatically.\n')
+                    + '3. Get the answer from the external AI.\n'
+                    + '4. Return with the solution to continue our conversation here.\n\n'
+                    + 'This is a general question without specific code context.'
+                }]
+              };
+            }
+            
+          } else {
+            // Error case: files were referenced but not found
+            const probeOutput = typeof extractedContent === 'string' ? extractedContent : JSON.stringify(extractedContent, null, 2);
+            throw new McpError(
+              ErrorCode.InvalidParams,
+              `No relevant code files found in your question. Please include specific file paths and use:\n• # syntax for functions/objects (e.g., main.rs#some_function)\n• : syntax for line ranges (e.g., file.py:45 for single line, file.py:100-150 for range)\n\nProbe extract output:\n${probeOutput}`
+            );
+          }
         }
 
         // Generate the final formatted content
