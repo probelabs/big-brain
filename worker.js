@@ -1,10 +1,10 @@
-// Cloudflare Worker for routing probeai.dev/big-brain/* to Big Brain Pages site
+// Cloudflare Worker for routing probelabs.com/big-brain/* to Big Brain Pages site
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
     
-    // Check if this is a request to probeai.dev/big-brain/*
-    if (url.hostname === 'probeai.dev' && url.pathname.startsWith('/big-brain')) {
+    // Check if this is a request to probelabs.com/big-brain/*
+    if (url.hostname === 'probelabs.com' && url.pathname.startsWith('/big-brain')) {
       // Remove /big-brain from the path and proxy to the Pages site
       const newPath = url.pathname.replace('/big-brain', '') || '/';
       const pagesUrl = `https://3d66f860.big-brain-cyt.pages.dev${newPath}${url.search}`;

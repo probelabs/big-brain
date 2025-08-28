@@ -38,7 +38,7 @@ claude mcp add -- npx -y @probelabs/big-brain@latest
 
 ## Why the Move?
 
-This package has been moved to the [@probelabs](https://www.npmjs.com/org/probelabs) organization to better reflect the project's integration with the [Probe](https://probeai.dev) ecosystem.
+This package has been moved to the [@probelabs](https://www.npmjs.com/org/probelabs) organization to better reflect the project's integration with the [Probe](https://probelabs.com) ecosystem.
 
 ## 🔄 Compatibility
 

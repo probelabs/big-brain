@@ -303,7 +303,7 @@ The MCP Inspector provides a browser-based interface for testing and debugging t
 
 ### Built on Probe
 
-BigBrain leverages [Probe](https://probeai.dev/) for intelligent code extraction. When your AI mentions specific files or functions, Probe automatically discovers and includes all related dependencies, types, and context - no manual file specification required.
+BigBrain leverages [Probe](https://probelabs.com/) for intelligent code extraction. When your AI mentions specific files or functions, Probe automatically discovers and includes all related dependencies, types, and context - no manual file specification required.
 
 ### Supported File Types
 
