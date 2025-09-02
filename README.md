@@ -87,6 +87,9 @@ For **fully automated Agent-to-Agent communication** with ChatGPT Desktop:
 ```bash
 # Enable ChatGPT Desktop integration
 claude mcp add -- npx -y @probelabs/big-brain@latest --chatgpt
+
+# Use with specific terminal (if Terminal.app doesn't have permissions)
+claude mcp add -- npx -y @probelabs/big-brain@latest --chatgpt --terminal iTerm
 ```
 
 **Requirements:**
@@ -151,6 +154,15 @@ The designated agent reads the file and continues the workflow without human int
 ### Available Flags
 
 BigBrain supports several command-line flags to customize behavior:
+
+- `--chatgpt` - Enable ChatGPT Desktop automation mode
+- `--terminal <app>` - Specify terminal for ChatGPT mode (Terminal, iTerm, Warp, Alacritty)
+- `--loop <prompt>` - Enable loop mode with custom agent prompt
+- `--disable-sound` - Disable sound notifications
+- `--disable-notification` - Disable system notifications
+- `--max-tokens <number>` - Set maximum token limit (default: 40000)
+
+Example configurations:
 
 ```json
 {

@@ -19,6 +19,7 @@ interface ChatGPTBridgeOptions {
   stableChecks?: number;
   maxWaitTime?: number;
   debug?: boolean;
+  terminal?: string;  // Terminal app to use (Terminal, iTerm, Alacritty, etc.)
 }
 
 interface ChatGPTResponse {
@@ -43,6 +44,7 @@ export class ChatGPTBridge {
   private debug: boolean;
   private initialCheckInterval: number;
   private stabilityCheckInterval: number;
+  private terminal: string;
 
   constructor(options: ChatGPTBridgeOptions = {}) {
     this.checkInterval = options.checkInterval || 5000;  // Check every 5 seconds when waiting for initial response
@@ -51,6 +53,7 @@ export class ChatGPTBridge {
     this.stableChecks = options.stableChecks || 2;  // Only need 2 stable reads
     this.maxWaitTime = options.maxWaitTime || 1200000;  // 20 minutes default timeout (for ChatGPT Pro thinking)
     this.debug = options.debug || false;
+    this.terminal = options.terminal || 'Terminal';  // Default to Terminal.app
   }
 
   private async wait(ms: number): Promise<void> {
@@ -200,7 +203,7 @@ class ChatGPTAutomation {
     let lastPreview = '';
     let conversationValidated = false;
     
-    while (Date.now() - startTime < ${this.maxWaitTime}) {
+    while (Date.now() - startTime < this.maxWaitTime) {
       checkNumber++;
       const elapsed = Math.round((Date.now() - startTime) / 1000);
       const spinner = spinnerFrames[checkNumber % spinnerFrames.length];
@@ -254,7 +257,7 @@ class ChatGPTAutomation {
             stableCount++;
             status = \`Response stable (\${responseLength} chars) - Confirming: \${stableCount}/${this.stableChecks}\`;
             
-            if (stableCount >= ${this.stableChecks}) {
+            if (stableCount >= this.stableChecks) {
               this.metrics.waitingTime = Date.now() - startTime;
               process.stdout.write('\\r\\x1b[K'); // Clear line
               console.log(\`[Terminal] ✅ Response confirmed stable after \${elapsed} seconds\`);
@@ -382,8 +385,61 @@ automation.run().then(() => {
       
       console.log('[ChatGPT Bridge] Launching Terminal automation...');
       
-      // Create a shell wrapper that ensures Terminal closes
-      const shellContent = `#!/bin/bash
+      // Create terminal-specific launcher
+      let launchCommand: string;
+      let shellContent: string;
+      
+      console.log(`[ChatGPT Bridge] Using terminal: ${this.terminal}`);
+      
+      switch(this.terminal.toLowerCase()) {
+        case 'iterm':
+        case 'iterm2':
+          shellContent = `#!/bin/bash
+# Run the node script
+node ${tempScript}
+EXIT_CODE=$?
+exit $EXIT_CODE
+`;
+          await fs.writeFile(shellWrapper, shellContent, { mode: 0o755 });
+          launchCommand = `
+            osascript -e '
+              tell application "iTerm"
+                activate
+                create window with default profile
+                tell current session of current window
+                  write text "bash ${shellWrapper}"
+                end tell
+              end tell
+            '
+          `;
+          break;
+          
+        case 'alacritty':
+          shellContent = `#!/bin/bash
+# Run the node script
+node ${tempScript}
+EXIT_CODE=$?
+exit $EXIT_CODE
+`;
+          await fs.writeFile(shellWrapper, shellContent, { mode: 0o755 });
+          // Alacritty needs to be launched differently
+          launchCommand = `open -a Alacritty --args -e bash ${shellWrapper}`;
+          break;
+          
+        case 'warp':
+          shellContent = `#!/bin/bash
+# Run the node script
+node ${tempScript}
+EXIT_CODE=$?
+exit $EXIT_CODE
+`;
+          await fs.writeFile(shellWrapper, shellContent, { mode: 0o755 });
+          launchCommand = `open -a Warp --args bash ${shellWrapper}`;
+          break;
+          
+        case 'terminal':
+        default:
+          shellContent = `#!/bin/bash
 # Run the node script
 node ${tempScript}
 EXIT_CODE=$?
@@ -393,17 +449,20 @@ osascript -e 'tell application "Terminal" to close front window' &
 
 exit $EXIT_CODE
 `;
-      await fs.writeFile(shellWrapper, shellContent, { mode: 0o755 });
+          await fs.writeFile(shellWrapper, shellContent, { mode: 0o755 });
+          launchCommand = `
+            osascript -e '
+              tell application "Terminal"
+                activate
+                do script "bash ${shellWrapper}"
+              end tell
+            '
+          `;
+          break;
+      }
       
-      // Launch the shell wrapper in Terminal
-      await execAsync(`
-        osascript -e '
-          tell application "Terminal"
-            activate
-            do script "bash ${shellWrapper}"
-          end tell
-        '
-      `);
+      // Launch the terminal with the script
+      await execAsync(launchCommand);
       
       console.log('[ChatGPT Bridge] Terminal launched, waiting for response...');
       

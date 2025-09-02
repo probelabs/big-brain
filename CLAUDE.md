@@ -35,6 +35,7 @@ Then use the web UI to call the ask_big_brain tool.
 
 ### Available Command-Line Flags
 - `--chatgpt` - Enable automatic ChatGPT Desktop integration
+- `--terminal <app>` - Specify terminal app for ChatGPT mode (Terminal, iTerm, Warp, Alacritty)
 - `--loop <prompt>` - Enable loop mode for multi-agent systems
 - `--disable-sound` - Disable sound notifications
 - `--disable-notification` - Disable dialog notifications

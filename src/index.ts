@@ -40,6 +40,14 @@ if (loopIndex !== -1 && args[loopIndex + 1]) {
 // Check for --chatgpt mode
 const chatGPTMode = args.includes('--chatgpt');
 
+// Parse --terminal flag (default: Terminal)
+let terminalApp = 'Terminal';
+const terminalIndex = args.indexOf('--terminal');
+if (terminalIndex !== -1 && args[terminalIndex + 1]) {
+  terminalApp = args[terminalIndex + 1];
+  console.log(`[BigBrain] Using terminal: ${terminalApp}`);
+}
+
 // Parse --max-tokens flag (default: 40000)
 let maxTokens = 40000;
 const maxTokensIndex = args.indexOf('--max-tokens');
@@ -60,7 +68,8 @@ const CONFIG = {
   enableSound: !args.includes('--disable-sound'),
   enableNotify: !args.includes('--disable-notification'),
   loopPrompt: loopPrompt,  // null if not in loop mode, string if enabled
-  chatGPTMode: chatGPTMode  // true if --chatgpt flag is present
+  chatGPTMode: chatGPTMode,  // true if --chatgpt flag is present
+  terminalApp: terminalApp  // Terminal app to use for ChatGPT automation
 };
 
 interface BigBrainArgs {
@@ -1039,7 +1048,9 @@ Note: This question does not reference any specific code files. External AI will
                 await ensureReaderScripts();
                 
                 // Create ChatGPT bridge and get response
-                const chatGPTBridge = new ChatGPTBridge();
+                const chatGPTBridge = new ChatGPTBridge({
+                  terminal: CONFIG.terminalApp
+                });
                 const response = await chatGPTBridge.query(formattedContent, true);
                 
                 if (response.success && response.response) {
@@ -1196,7 +1207,8 @@ Current query would require a model with at least ${totalTokens.toLocaleString()
               debug: false,
               checkInterval: 10000,  // Check every 10 seconds (very conservative)
               stableChecks: 2,
-              maxWaitTime: 1200000  // 20 minutes timeout (ChatGPT Pro can take this long)
+              maxWaitTime: 1200000,  // 20 minutes timeout (ChatGPT Pro can take this long)
+              terminal: CONFIG.terminalApp
             });
             
             console.log('🤖 Querying ChatGPT Desktop with formatted question...');
