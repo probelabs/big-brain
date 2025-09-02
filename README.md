@@ -328,6 +328,45 @@ BigBrain works with all common programming languages and file types:
 - Markdown (`.md`)
 - And many more...
 
+## Troubleshooting & FAQ
+
+### Permission Errors with ChatGPT Desktop Mode
+
+If you see osascript permission errors (-1743, -25211, or "Not authorized to send Apple events"):
+
+1. **Grant Terminal Accessibility Permissions:**
+   - Go to System Settings → Privacy & Security → Accessibility
+   - Add and enable your terminal app (Terminal.app, iTerm, etc.)
+   - Restart your terminal after granting permissions
+
+2. **Try a Different Terminal:**
+   - If Terminal.app doesn't work, try iTerm with `--terminal iTerm`
+   - Example: `claude mcp add -- npx -y @probelabs/big-brain@latest --chatgpt --terminal iTerm`
+   - Supported terminals: Terminal, iTerm, Warp, Alacritty
+
+3. **Reset Permissions (if still having issues):**
+   ```bash
+   tccutil reset AppleEvents
+   tccutil reset Accessibility
+   ```
+   Then re-grant permissions in System Settings
+
+4. **Check Terminal Has Full Disk Access:**
+   - System Settings → Privacy & Security → Full Disk Access
+   - Enable your terminal app if needed
+
+### ChatGPT Desktop Not Responding
+
+- Ensure ChatGPT Desktop app is installed and running
+- Try closing and reopening ChatGPT Desktop
+- Check that you're signed in to ChatGPT
+
+### General Connection Issues
+
+- Verify BigBrain is properly installed: `npm list @probelabs/big-brain`
+- Check MCP server status: `claude mcp list`
+- Restart Claude Code if the MCP connection is lost
+
 ## License
 
 MIT
